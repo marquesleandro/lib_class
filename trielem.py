@@ -4,6 +4,7 @@
 # Gesar Search Group
 # State University of the Rio de Janeiro
 # e-mail: gustavo.rabello@uerj.br
+# e-mail: marquesleandro67@gmail.com
 # ==========================================
 
 # This code is used to assemble 

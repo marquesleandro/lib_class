@@ -1,7 +1,26 @@
+# ==========================================
+# Code created by Leandro Marques at 12/2017
+# Gesar Search Group
+# State University of the Rio de Janeiro
+# e-mail: marquesleandro67@gmail.com
+# ==========================================
+
+# This code is used for to compute boundary condition
+
+
+# ------------------------------------------------------------------
+# Use:
+#bc_neumann_vx,bc_dirichlet_vx,LHS_vx,bc_1_vx,bc_2_vx,ibc_vx = 
+#b_bc(mesh.npoints, mesh.x, mesh.y, bc, mesh.neumann_edges[1], mesh.dirichlet_pts[1], LHS_vx0, mesh.neighbors_nodes)
+
+# ------------------------------------------------------------------
+
+
 import numpy as np
 
-def b_bc(_npoints, _x, _y, _bc, _neumann_edges,_dirichlet_pts, _LHS, _neighbors_nodes): #For Method 2
+def b_bc(_npoints, _x, _y, _bc, _neumann_edges,_dirichlet_pts, _LHS, _neighbors_nodes): #For Method 2 and 3
 #def b_bc(_npoints, _x, _y, _bc, _neumann_edges,_dirichlet_pts, _LHS): #For Method 1
+
  bc_neumann = np.zeros([_npoints,1], dtype = float) 
  bc_dirichlet = np.zeros([_npoints,1], dtype = float) 
  ibc = [] 

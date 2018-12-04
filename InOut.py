@@ -1,10 +1,20 @@
-## =================================================================== ##
-#  this is file InOut.py, created at 12-Jun-2013                #
-#  maintained by Gustavo Rabello dos Anjos                              #
-#  e-mail: gustavo.rabello@gmail.com                                    #
-## =================================================================== ##
+# ==========================================
+# Code created by DSc. Gustavo Rabello 
+# and modificated by Leandro Marques
+# Gesar Search Group
+# State University of the Rio de Janeiro
+# e-mail: gustavo.rabello@uerj.br
+# e-mail: marquesleandro67@gmail.com
+# ==========================================
 
-# This file was modified by Leandro Marques dos Santos
+# This code is used to export vtkfile for paraview visualization
+
+
+# ------------------------------------------------------------------
+# Use:
+# save = InOut.Linear(mesh.x,mesh.y,mesh.IEN,mesh.npoints,mesh.nelem,scalar1,scalar2,scalar3,vector1,vector2)
+# save.saveVTK('/home/marquesleandro/directory_result_name/directory_simulator_name','simulator_name%s' %t)
+# ------------------------------------------------------------------
 
 
 
