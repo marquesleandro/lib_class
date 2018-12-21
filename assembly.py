@@ -14,11 +14,11 @@
 # ------------------------------------------------------------------
 
 import numpy as np
-import trigauss
+import gaussian_quadrature
 import scipy.sparse as sps
 from tqdm import tqdm
 
-def assembly_linear(_npoints, _nelem, _IEN, _x, _y):
+def Linear(_npoints, _nelem, _IEN, _x, _y):
  
  Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
  Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
@@ -31,7 +31,7 @@ def assembly_linear(_npoints, _nelem, _IEN, _x, _y):
  Gy = sps.lil_matrix((_npoints,_npoints), dtype = float)
 
 
- linear = trigauss.Linear(_x, _y, _IEN)
+ linear = gaussian_quadrature.Linear(_x, _y, _IEN)
 
  for e in tqdm(range(0, _nelem)):
   linear.numerical(e)
