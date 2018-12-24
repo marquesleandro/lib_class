@@ -14,7 +14,7 @@
 
 import numpy as np
 
-def semi_lagrangian(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
+def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
  
@@ -71,10 +71,14 @@ def semi_lagrangian(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc
                                       [1, x2, y2],
                                       [1, x3, y3]]))
    
-     Ni = A1/At
-     Nj = A2/At
-     Nk = A3/At
+     Li = A1/At
+     Lj = A2/At
+     Lk = A3/At
      
+     Ni = Li
+     Nj = Lj
+     Nk = Lk
+
      scalar1 = _scalar[v1]
      scalar2 = _scalar[v2]
      scalar3 = _scalar[v3]
@@ -126,7 +130,7 @@ def semi_lagrangian(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc
      #print "elemento contorno proximo ao no %s" %p
      #print "fazer regra da alavanca"
 
-     scalar[node] = _bc_dirichlet[p] + _bc_neumann[p]
+     scalar[node] = _scalar[node]
      #print scalar[node]
 
      ww = 0
