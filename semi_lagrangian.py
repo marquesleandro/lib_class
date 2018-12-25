@@ -119,9 +119,9 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_diric
   
    # coordinate doesn't found
    else:
-    length_min = min(length, key=lambda k:k[1])
+    length = list(set(length))
     node1 = p
-    p = length_min[0]
+    p = length[-1]
     #print p
 
     # outside domain
@@ -130,7 +130,30 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_diric
      #print "elemento contorno proximo ao no %s" %p
      #print "fazer regra da alavanca"
 
-     scalar[node] = _scalar[node]
+     v1 = length[-1]
+     v2 = length[-2]
+
+     #xi = float(_xn[v1])
+     #xj = float(_xn[v2])
+
+     #yi = float(_yn[v1])
+     #yj = float(_yn[v2])
+
+
+     #Li = (xj - x)/(xj - xi)
+     #Lj = (x - xi)/(xj - xi)
+
+     #Ni = Li
+     #Nj = Lj
+ 
+     scalar1 = _scalar[v1]
+     scalar2 = _scalar[v2]
+
+     #scalar[node] = Ni*scalar1 + Nj*scalar2
+     
+     scalar[node] = (scalar1 + scalar2)/2.0
+     
+     #print Ni + Nj
      #print scalar[node]
 
      ww = 0
