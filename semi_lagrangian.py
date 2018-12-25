@@ -14,7 +14,8 @@
 
 import numpy as np
 
-def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
+def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
+#def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
  
