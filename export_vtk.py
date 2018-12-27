@@ -50,13 +50,12 @@ class Linear:
 
   if _self.scalar1 is not None:
    _self.vtkScalar(vtkFile,"concentration",_self.scalar1);
-  '''
+  
   if _self.scalar2 is not None:
    _self.vtkScalar(vtkFile,"vorticity",_self.scalar2);
 
   if _self.scalar3 is not None:
    _self.vtkScalar(vtkFile,"stream",_self.scalar3);
-  '''
 
 
   vtkFile.close()
