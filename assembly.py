@@ -18,7 +18,7 @@ import gaussian_quadrature
 import scipy.sparse as sps
 from tqdm import tqdm
 
-def Linear(_npoints, _nelem, _IEN, _x, _y):
+def Linear(_GL, _npoints, _nelem, _IEN, _x, _y):
  
  Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
  Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
@@ -57,4 +57,50 @@ def Linear(_npoints, _nelem, _IEN, _x, _y):
 
 
  return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy
+
+
+def Mini_NS2D(_GLV, _GLP, _NV, _NP, _nelem, _IEN, _x, _y):
+ 
+ K = sps.lil_matrix((2*_NV,2*_NV), dtype = float)
+ M = sps.lil_matrix((2*_NV,2*_NV), dtype = float)
+ MLump = sps.lil_matrix((2*_NV,2*_NV), dtype = float)
+ G = sps.lil_matrix((2*_NV,_NP), dtype = float)
+ D = sps.lil_matrix((_NP,2*_NV), dtype = float)
+
+
+ mini = gaussian_quadrature.Mini(_x, _y, _IEN)
+
+ for e in tqdm(range(0, _nelem)):
+  mini.numerical(e)
+
+  for i in range(0, _GLV): 
+   ii = _IEN[e][i]
+  
+   for j in range(0, _GLV):
+    jj = _IEN[e][j]
+
+    K[ii,jj] += 2.0*mini.kxx[i][j]
+    K[ii + _NV,jj] += mini.kxy[i][j]
+    K[ii,jj + _NV] += mini.kyx[i][j]
+    K[ii + _NV,jj + _NV] += 2.0*mini.kyy[i][j]
+   
+    M[ii,jj] += mini.mass[i][j]
+    M[ii + _NV,jj + _NV] += mini.mass[i][j]
+    
+    MLump[ii,ii] += mini.mass[i][j]
+    MLump[ii + _NV,ii + _NV] += mini.mass[i][j]
+
+
+   for k in range(0, _GLP):
+    kk = _IEN[e][k]
+
+    G[ii,kk] += mini.gx[i][k]
+    G[ii + _NV,kk] += mini.gy[i][k]
+
+    D[kk,ii] += mini.dx[k][i]
+    D[kk,ii + _NV] += mini.dy[k][i]
+
+
+
+ return K, M, MLump, G, D
 

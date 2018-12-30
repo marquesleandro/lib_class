@@ -1,5 +1,5 @@
 # ==========================================
-# Code created by Leandro Marques at 12/2018
+# Code created by Leandro Marques at 12/2017
 # Gesar Search Group
 # State University of the Rio de Janeiro
 # e-mail: marquesleandro67@gmail.com
@@ -110,8 +110,7 @@ class Linear:
 
  def ien(_self):
   _self.IEN = np.zeros([_self.nelem,3], dtype = int)
-  _self.GL = len(_self.IEN[0,:])
-
+  
   for e in range(0, _self.nelem):
    v1 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][5]) - 1
    v2 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][6]) - 1
@@ -154,9 +153,8 @@ class Linear:
 
 
 class Mini:
- def __init__(_self, _dir, _file, _number_equations):
+ def __init__(_self, _dir, _file):
   _self.name = _dir + '/' + _file
-  _self.neq = _number_equations
   _self.gmsh = []
   _self.neumann_lines = {}
   _self.dirichlet_lines = {}
@@ -167,6 +165,9 @@ class Mini:
   _self.far_neighbors_nodes = {}
   _self.far_neighbors_elements = {}
 
+
+ def number_equations(_self, _neq):
+  _self.neq = _neq
   
   # Converting .msh in a python list
   with open(_self.name) as mesh:
@@ -183,6 +184,10 @@ class Mini:
    _self.neumann_edges[i] = []
    _self.dirichlet_lines[i] = []
    _self.dirichlet_pts[i] = []
+
+  for i in range(0, _self.npoints):
+   _self.neighbors_nodes[i] = []
+   _self.neighbors_elements[i] = []
 
 
   # Lines classification in neumann or dirichlet
@@ -226,10 +231,9 @@ class Mini:
 
 
   _self.nelem = int(_self.gmsh[jj + 10][0]) - ii + 1
-  _self.NP = _self.npoints
-  _self.NV = _self.npoints + _self.nelem
-
-  for i in range(0, _self.NP):
+  _self.npoints = _self.npoints + _self.nelem
+  
+  for i in range(0, _self.npoints):
    _self.neighbors_nodes[i] = []
    _self.neighbors_elements[i] = []
    _self.far_neighbors_nodes[i] = []
@@ -239,17 +243,15 @@ class Mini:
   _self.ii = ii
   _self.jj = jj
 
-    
+
  def ien(_self):
   _self.IEN = np.zeros([_self.nelem,4], dtype = int)
-  _self.GLV = len(_self.IEN[0,:])
-  _self.GLP = len(_self.IEN[0,:]) - 1
   
   for e in range(0, _self.nelem):
    v1 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][5]) - 1
    v2 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][6]) - 1
    v3 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][7]) - 1
-   v4 = _self.NP + e
+   v4 = (_self.npoints - _self.nelem) + e
   
    _self.IEN[e] = [v1,v2,v3,v4]
  
@@ -268,7 +270,7 @@ class Mini:
    _self.neighbors_elements[v3].append(e)  
    _self.neighbors_elements[v4].append(e)  
  
-  for i in range(0, _self.NP):
+  for i in range(0, _self.npoints):
    for j in _self.neighbors_nodes[i]:
     _self.far_neighbors_nodes[i].extend(_self.neighbors_nodes[j]) 
     _self.far_neighbors_elements[i].extend(_self.neighbors_elements[j]) 
@@ -280,11 +282,11 @@ class Mini:
                                         - set(_self.neighbors_elements[i]))
  
  def coord(_self):
-  _self.x = np.zeros([_self.NV,1], dtype = float)
-  _self.y = np.zeros([_self.NV,1], dtype = float)
+  _self.x = np.zeros([_self.npoints,1], dtype = float)
+  _self.y = np.zeros([_self.npoints,1], dtype = float)
   _self.npts = []
 
-  for i in range(0, _self.NP):  
+  for i in range(0, (_self.npoints - _self.nelem)):  
    _self.x[i] = _self.gmsh[_self.nphysical + 8 + i][1]
    _self.y[i] = _self.gmsh[_self.nphysical + 8 + i][2]
    _self.npts.append(i)
