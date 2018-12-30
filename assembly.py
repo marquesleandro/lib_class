@@ -79,10 +79,11 @@ def Mini_NS2D(_GLV, _GLP, _NV, _NP, _nelem, _IEN, _x, _y):
    for j in range(0, _GLV):
     jj = _IEN[e][j]
 
-    K[ii,jj] += 2.0*mini.kxx[i][j]
-    K[ii + _NV,jj] += mini.kxy[i][j]
-    K[ii,jj + _NV] += mini.kyx[i][j]
-    K[ii + _NV,jj + _NV] += 2.0*mini.kyy[i][j]
+    #MSC 2007 pag.84
+    K[ii,jj] += 2.0*mini.kxx[i][j] + mini.kyy[i][j] #K11
+    K[ii,jj + _NV] += mini.kxy[i][j] #K12
+    K[ii + _NV,jj] += mini.kyx[i][j] #K21
+    K[ii + _NV,jj + _NV] += mini.kxx[i][j] + 2.0*mini.kyy[i][j] #K22
    
     M[ii,jj] += mini.mass[i][j]
     M[ii + _NV,jj + _NV] += mini.mass[i][j]
