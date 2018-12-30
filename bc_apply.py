@@ -12,6 +12,8 @@ import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg
 
+# OBS: para vetor devemos unir eixo x e y no mesmo vetor, logo usar np.row_stack([dirichlet_pts[1],dirichlet_pts[2]])
+
 
 class Poiseuille:
 
