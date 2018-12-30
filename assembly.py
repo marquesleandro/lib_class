@@ -36,10 +36,10 @@ def Linear(_GL, _npoints, _nelem, _IEN, _x, _y):
  for e in tqdm(range(0, _nelem)):
   linear.numerical(e)
 
-  for i in range(0,3): 
+  for i in range(0,_GL): 
    ii = _IEN[e][i]
   
-   for j in range(0,3):
+   for j in range(0,_GL):
     jj = _IEN[e][j]
 
     Kxx[ii,jj] += linear.kxx[i][j]
