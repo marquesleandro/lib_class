@@ -49,13 +49,13 @@ class Linear:
   _self.vtkVector(vtkFile,'vector', _self.vec1, _self.vec2)
 
   if _self.scalar1 is not None:
-   _self.vtkScalar(vtkFile,"scalar 1",_self.scalar1);
+   _self.vtkScalar(vtkFile,"scalar1",_self.scalar1);
   
   if _self.scalar2 is not None:
-   _self.vtkScalar(vtkFile,"scalar 2",_self.scalar2);
+   _self.vtkScalar(vtkFile,"scalar2",_self.scalar2);
 
   if _self.scalar3 is not None:
-   _self.vtkScalar(vtkFile,"scalar 3",_self.scalar3);
+   _self.vtkScalar(vtkFile,"scalar3",_self.scalar3);
 
 
   vtkFile.close()

@@ -14,10 +14,8 @@
 
 import numpy as np
 
-def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
+def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar, scalar):
 #def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
- 
- scalar = np.zeros([_npoints,1], dtype = float) 
  
  for p in range(0,_npoints):
   x = float(_xd[p])
@@ -55,7 +53,22 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
      #ee = e + 81
      #print "elemento dominio %s" %ee
      #print "fazer interpolacao triangular" 
-     
+ 
+     x = float(_xd[node])
+     y = float(_yd[node])
+
+     v1 = _IEN[e][0]
+     v2 = _IEN[e][1]
+     v3 = _IEN[e][2]
+
+     x1 = float(_xn[v1])
+     x2 = float(_xn[v2])
+     x3 = float(_xn[v3])
+
+     y1 = float(_yn[v1])
+     y2 = float(_yn[v2])
+     y3 = float(_yn[v3])
+  
      A1 = 0.5*np.linalg.det(np.array([[1, x, y],
                                       [1, x2, y2],
                                       [1, x3, y3]]))
@@ -131,7 +144,7 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
      #print "elemento contorno proximo ao no %s" %p
      #print "fazer regra da alavanca"
 
-     scalar[node] = _scalar[node]
+     scalar[node] = _scalar[p]
      
      #print Ni + Nj
      #print scalar[node]
