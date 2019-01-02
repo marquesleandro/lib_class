@@ -9,26 +9,25 @@
 
 # ------------------------------------------------------------------
 # Use:
-# scalar_d = semi_lagrangian(mesh.npoints, mesh.IEN, mesh.x, mesh.y, x_d, y_d, mesh.neighbors_elements, bc_dirichlet, bc_neumann, scalar_n)
+# scalar_d = semi_lagrangian(mesh.npoints, mesh.IEN, mesh.x, mesh.y, x_d, y_d, mesh.neighbors_elements, scalar_n)
 # ------------------------------------------------------------------
 
 import numpy as np
 
-def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar, scalar):
-#def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _bc_dirichlet, _bc_neumann, _scalar):
+def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
  
- for p in range(0,_npoints):
-  x = float(_xd[p])
-  y = float(_yd[p])
+ scalar = np.zeros([_npoints,1], dtype = float) 
+ 
+ for i in range(0,_npoints):
+  x = float(_xd[i])
+  y = float(_yd[i])
 
-  node = p
+  node = i
   length = []
   ww = 1
-  #print ""
-  #print p
 
   while ww == 1:
-   for e in _neighbors_elements[p]:
+   for e in _neighbors_elements[node]:
     v1 = _IEN[e][0]
     v2 = _IEN[e][1]
     v3 = _IEN[e][2]
@@ -48,27 +47,10 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar, 
     b = np.array([x,y,1.0])
  
     alpha = np.linalg.solve(A,b)
+
  
     if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
-     #ee = e + 81
-     #print "elemento dominio %s" %ee
-     #print "fazer interpolacao triangular" 
  
-     x = float(_xd[node])
-     y = float(_yd[node])
-
-     v1 = _IEN[e][0]
-     v2 = _IEN[e][1]
-     v3 = _IEN[e][2]
-
-     x1 = float(_xn[v1])
-     x2 = float(_xn[v2])
-     x3 = float(_xn[v3])
-
-     y1 = float(_yn[v1])
-     y2 = float(_yn[v2])
-     y3 = float(_yn[v3])
-  
      A1 = 0.5*np.linalg.det(np.array([[1, x, y],
                                       [1, x2, y2],
                                       [1, x3, y3]]))
@@ -97,12 +79,11 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar, 
      scalar2 = _scalar[v2]
      scalar3 = _scalar[v3]
 
-     scalar[node] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
-     #print Ni + Nj + Nk
-     #print scalar[node]
+     scalar[i] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
 
      ww = 0
      break
+
 
     else:
      x_a = x1 - x
@@ -127,28 +108,22 @@ def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar, 
    
      ww = 1
 
+
    # first neighbor is element found 
    if ww == 0:
      break
-  
+ 
+ 
    # coordinate doesn't found
    else:
     length_min = min(length, key=lambda k:k[1])
-    node1 = p
-    p = length_min[0]
-    #print p
+    node1 = node
+    node = length_min[0]
 
     # outside domain
-    if p == node1 and ww == 1:
-     #p = p + 1
-     #print "elemento contorno proximo ao no %s" %p
-     #print "fazer regra da alavanca"
-
-     scalar[node] = _scalar[p]
+    if node == node1 and ww == 1:
+     scalar[i] = _scalar[node]
      
-     #print Ni + Nj
-     #print scalar[node]
-
      ww = 0
      break
 
