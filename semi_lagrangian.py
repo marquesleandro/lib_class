@@ -14,6 +14,44 @@
 
 import numpy as np
 
+
+def Linear_1D(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
+ 
+ scalar = np.zeros([_npoints,1], dtype = float) 
+
+ for i in range(0,_npoints):
+  x = float(_xd[i])
+
+  for e in range(0,_nelem):
+   v1 = _IEN[e][0]
+   v2 = _IEN[e][1]
+
+   x1 = float(_xn[v1])
+   x2 = float(_xn[v2])
+
+   len1 = abs(x2 - x)
+   len2 = abs(x1 - x)
+   lent = abs(x1 - x2)
+
+   Li = len1/lent
+   Lj = len2/lent
+
+   alpha = [Li,Lj]
+   alpha = np.array(alpha)
+
+   if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+    Ni = Li
+    Nj = Lj
+
+    scalar1 = _scalar[v1]
+    scalar2 = _scalar[v2]
+
+    scalar[i] = Ni*scalar1 + Nj*scalar2
+    break
+ 
+ return scalar  
+
+
 def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
