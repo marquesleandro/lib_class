@@ -650,6 +650,124 @@ class Half_Poiseuille:
    _self.bc_2[mm] = 0.0
  
  
+class Convection1D:
+
+ # ------------------------------------------------------------------------------------------------------
+ # Use:
+
+ # # Applying c condition
+ # condition_concentration = bc_apply.Convection(mesh.nphysical,mesh.npoints,mesh.x)
+ # condition_concentration.neumann_condition(mesh.neumann_pts[1])
+ # condition_concentration.dirichlet_condition(mesh.dirichlet_pts[1])
+ # condition_concentration.gaussian_elimination(LHS_c0,mesh.neighbors_nodes)
+ # condition_concentration.initial_condition()
+ # c = np.copy(condition_concentration.c)
+ # vx = np.copy(condition_concentration.vx)
+ # ------------------------------------------------------------------------------------------------------
+
+
+ def __init__(_self, _nphysical, _npoints, _x):
+  _self.nphysical = _nphysical
+  _self.npoints = _npoints
+  _self.x = _x
+  _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+
+  # Velocity c condition
+  _self.bc[0][0] = 0.0
+  _self.bc[1][0] = 0.0
+
+
+ def neumann_condition(_self, _neumann_pts):
+  _self.bc_neumann = np.zeros([_self.npoints,1], dtype = float) 
+  _self.neumann_pts = _neumann_pts 
+ 
+  for i in range(0, len(_self.neumann_pts)):
+   line = _self.neumann_pts[i][0] - 1
+   v1 = _self.neumann_pts[i][1] - 1
+
+   _self.bc_neumann[v1] += _self.bc[line]
+
+
+ def dirichlet_condition(_self, _dirichlet_pts):
+  _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
+  _self.ibc = [] 
+  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
+  _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
+  _self.dirichlet_pts = _dirichlet_pts
+ 
+
+  for i in range(0, len(_self.dirichlet_pts)):
+   line = _self.dirichlet_pts[i][0] - 1
+   v1 = _self.dirichlet_pts[i][1] - 1
+
+   _self.bc_1[v1] = _self.bc[line]
+
+   _self.bc_neumann[v1] = 0.0 #Dirichlet condition is preferential
+
+   _self.ibc.append(v1)
+   
+  _self.ibc = np.unique(_self.ibc)
+
+
+ def gaussian_elimination(_self, _LHS0, _neighbors_nodes):
+  _self.LHS = sps.lil_matrix.copy(_LHS0)
+  _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
+  _self.neighbors_nodes = _neighbors_nodes
+
+#  # Scipy sparse - Method 1
+#  _self.LHS = _self.LHS.tolil() #For scipy array
+#  for i in range(0,len(_self.ibc)):
+#   mm = _self.ibc[i]
+#   #_self.bc_dirichlet -= _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
+#   _self.bc_dirichlet -= _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
+#   _self.LHS[:,mm] = 0.0
+#   _self.LHS[mm,:] = 0.0
+#   _self.LHS[mm,mm] = 1.0
+#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
+#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
+#   _self.bc_2[mm] = 0.0
+#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
+
+#  # Scipy sparse - Method 2
+#  for i in range(0,len(_self.ibc)):
+#   mm = _self.ibc[i]
+# 
+#   for nn in _self.neighbors_nodes[mm]:
+#    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
+#    _self.LHS[nn,mm] = 0.0
+#    _self.LHS[mm,nn] = 0.0
+#   
+#   _self.LHS[mm,mm] = 1.0
+#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
+#   _self.bc_2[mm] = 0.0
+ 
+# # Scipy sparse - Method 3
+  for mm in _self.ibc:
+   for nn in _self.neighbors_nodes[mm]:
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.LHS[nn,mm] = 0.0
+    _self.LHS[mm,nn] = 0.0
+   
+   _self.LHS[mm,mm] = 1.0
+   _self.bc_dirichlet[mm] = _self.bc_1[mm]
+   _self.bc_2[mm] = 0.0
+ 
+
+ def initial_condition(_self):
+  _self.c = np.copy(_self.bc_dirichlet)
+  _self.vx = np.zeros([_self.npoints,1], dtype = float)
+
+  for i in range(0,_self.npoints):
+   _self.vx[i] = 1.0
+
+
+  for i in range(0, _self.npoints):
+   x = _self.x[i]
+
+   if x < 0.2:
+    _self.c[i] = np.sin((x/0.1)*(np.pi/2))
+
+
 
 
 

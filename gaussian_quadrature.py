@@ -8,8 +8,7 @@
 # ==========================================
 
 # This code is used to assemble 
-# the elementary arrays of a
-# triangular element
+# the elementary arrays
 
 
 # ------------------------------------------------------------------
@@ -34,11 +33,19 @@
 #                     and Fluid Flow - Lewis, Nithiarasu,
 #                     Seetharamu - pg. 196-200
 #                     For Q_elem pg. 126
+#                     For 1D pg. 193
 
 
 import numpy as np
 
-class Linear:
+class Linear1D:
+ def __init__(_self):
+  _self.K_elem = np.array([[1,-1],[-1,1]])
+  _self.M_elem = np.array([[2,1],[1,2]])
+  _self.G_elem = np.array([[-1,1],[-1,1]])
+
+
+class Linear2D:
  def __init__(_self, _x, _y, _IEN):
 
   _self.NUMRULE = 4

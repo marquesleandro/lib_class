@@ -18,7 +18,35 @@ import gaussian_quadrature
 import scipy.sparse as sps
 from tqdm import tqdm
 
-def Linear(_GL, _npoints, _nelem, _IEN, _x, _y):
+
+
+def Linear1D(_GL, _npoints, _nelem, _IEN, _x):
+ K = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ M = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ G = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ 
+ 
+ linear = gaussian_quadrature.Linear1D()
+
+ for e in tqdm(range(0, _nelem)):
+  dx = _x[e+1] - _x[e]
+
+  for i in range(0,_GL): 
+   ii = _IEN[e][i]
+  
+   for j in range(0,_GL):
+    jj = _IEN[e][j]
+
+    K[ii,jj] += (1.0/dx)*linear.K_elem[i][j]
+    M[ii,jj] += (dx/6.0)*linear.M_elem[i][j]
+    G[ii,jj] += (1.0/dx)*linear.G_elem[i][j]
+
+
+ return K, M, G
+
+
+
+def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y):
  
  Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
  Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
@@ -31,7 +59,7 @@ def Linear(_GL, _npoints, _nelem, _IEN, _x, _y):
  Gy = sps.lil_matrix((_npoints,_npoints), dtype = float)
 
 
- linear = gaussian_quadrature.Linear(_x, _y, _IEN)
+ linear = gaussian_quadrature.Linear2D(_x, _y, _IEN)
 
  for e in tqdm(range(0, _nelem)):
   linear.numerical(e)
@@ -55,8 +83,8 @@ def Linear(_GL, _npoints, _nelem, _IEN, _x, _y):
     Gy[ii,jj] += linear.gy[i][j]
 
 
-
  return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy
+
 
 
 def Mini_NS2D(_GLV, _GLP, _NV, _NP, _nelem, _IEN, _x, _y):
@@ -102,6 +130,7 @@ def Mini_NS2D(_GLV, _GLP, _NV, _NP, _nelem, _IEN, _x, _y):
     D[kk,ii + _NV] += mini.dy[k][i]
 
 
-
  return K, M, MLump, G, D
+
+
 

@@ -15,12 +15,15 @@
 import numpy as np
 
 
-def Linear_1D(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
+def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
 
  for i in range(0,_npoints):
   x = float(_xd[i])
+
+  ww = 0
+  length = []
 
   for e in range(0,_nelem):
    v1 = _IEN[e][0]
@@ -47,12 +50,205 @@ def Linear_1D(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
     scalar2 = _scalar[v2]
 
     scalar[i] = Ni*scalar1 + Nj*scalar2
+    ww = 1
     break
+
+   else:
+    x_a = x1 - x
+    x_b = x2 - x
+  
+    length1 = np.sqrt(x_a**2)
+    length2 = np.sqrt(x_b**2)
+
+    a_1 = [v1,length1]
+    a_2 = [v2,length2]
  
+    length.append(a_1)
+    length.append(a_2)
+   
+  if ww == 0:
+   length_min = min(length, key=lambda k:k[1])
+   node = length_min[0]
+   scalar[i] = _scalar[node]
+  
  return scalar  
 
 
-def Linear_2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
+def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
+ 
+ scalar = np.zeros([_npoints,1], dtype = float) 
+
+ for i in range(0,_npoints):
+  x = float(_xd[i])
+
+  node = i
+  length = []
+  ww = 1
+  while ww == 1:
+   for e in _neighbors_elements[node]:
+    v1 = _IEN[e][0]
+    v2 = _IEN[e][1]
+
+    x1 = float(_xn[v1])
+    x2 = float(_xn[v2])
+
+    len1 = abs(x2 - x)
+    len2 = abs(x1 - x)
+    lent = abs(x1 - x2)
+
+    Li = len1/lent
+    Lj = len2/lent
+
+    alpha = [Li,Lj]
+    alpha = np.array(alpha)
+ 
+    if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+     Ni = Li
+     Nj = Lj
+ 
+     scalar1 = _scalar[v1]
+     scalar2 = _scalar[v2]
+
+     scalar[i] = Ni*scalar1 + Nj*scalar2
+     ww = 0
+     break
+
+    else:
+     x_a = x1 - x
+     x_b = x2 - x
+  
+     length1 = np.sqrt(x_a**2)
+     length2 = np.sqrt(x_b**2)
+
+     a_1 = [v1,length1]
+     a_2 = [v2,length2]
+ 
+     length.append(a_1)
+     length.append(a_2)
+   
+     ww = 1
+
+
+   # first neighbor is element found 
+   if ww == 0:
+     break
+ 
+ 
+   # coordinate doesn't found
+   else:
+    length_min = min(length, key=lambda k:k[1])
+    node1 = node
+    node = length_min[0]
+
+    # outside domain
+    if node == node1 and ww == 1:
+     scalar[i] = _scalar[node]
+     
+     ww = 0
+     break
+
+
+ return scalar  
+
+
+
+def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
+ 
+ scalar = np.zeros([_npoints,1], dtype = float) 
+ 
+ for i in range(0,_npoints):
+  x = float(_xd[i])
+  y = float(_yd[i])
+  
+  ww = 0
+  length = []
+
+  for e in range(0,_nelem):
+   v1 = _IEN[e][0]
+   v2 = _IEN[e][1]
+   v3 = _IEN[e][2]
+
+   x1 = float(_xn[v1])
+   x2 = float(_xn[v2])
+   x3 = float(_xn[v3])
+
+   y1 = float(_yn[v1])
+   y2 = float(_yn[v2])
+   y3 = float(_yn[v3])
+
+   A = np.array([[x1,x2,x3],
+                 [y1,y2,y3],
+                 [1.0,1.0,1.0]])
+
+   b = np.array([x,y,1.0])
+ 
+   alpha = np.linalg.solve(A,b)
+
+   
+   if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+    A1 = 0.5*np.linalg.det(np.array([[1, x, y],
+                                     [1, x2, y2],
+                                     [1, x3, y3]]))
+ 
+    A2 = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                     [1, x, y],
+                                     [1, x3, y3]]))
+ 
+    A3 = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                     [1, x2, y2],
+                                     [1, x, y]]))
+ 
+    At = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                     [1, x2, y2],
+                                     [1, x3, y3]]))
+   
+    Li = A1/At
+    Lj = A2/At
+    Lk = A3/At
+     
+    Ni = Li
+    Nj = Lj
+    Nk = Lk
+
+    scalar1 = _scalar[v1]
+    scalar2 = _scalar[v2]
+    scalar3 = _scalar[v3]
+
+    scalar[i] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
+    ww = 1
+    break
+
+   else:
+    x_a = x1 - x
+    x_b = x2 - x
+    x_c = x3 - x
+   
+    y_a = y1 - y
+    y_b = y2 - y
+    y_c = y3 - y
+  
+    length1 = np.sqrt(x_a**2 + y_a**2)
+    length2 = np.sqrt(x_b**2 + y_b**2)
+    length3 = np.sqrt(x_c**2 + y_c**2)
+
+    a_1 = [v1,length1]
+    a_2 = [v2,length2]
+    a_3 = [v3,length3]
+ 
+    length.append(a_1)
+    length.append(a_2)
+    length.append(a_3)
+   
+  if ww == 0:
+   length_min = min(length, key=lambda k:k[1])
+   node = length_min[0]
+   scalar[i] = _scalar[node]
+     
+ return scalar  
+
+
+
+def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
  
