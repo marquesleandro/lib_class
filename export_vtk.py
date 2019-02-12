@@ -19,7 +19,7 @@
 
 
 import numpy as np
-
+import os
 
 class Linear1D:
  def __init__(_self,_x,_IEN,_npoints,_nelem,_scalar1,_scalar2,_scalar3,_vec1,_vec2):
@@ -33,14 +33,28 @@ class Linear1D:
   _self.vec1 = _vec1
   _self.vec2 = _vec2
 
- def saveVTK(_self,_dir,_file,_iter=None):
 
-  if _iter is None:
-   vtkFile = open(_dir + '/' + _file + '.vtk', 'w')
-   _self.vtkHeader(vtkFile)
+ def create_dir(_self,_dir):
+
+  _self.path = '/home/marquesleandro'
+  if not 'results' in os.listdir(_self.path):
+   os.mkdir('/home/marquesleandro/results')
+
+  _self.path = '/home/marquesleandro/results'
+  if not _dir in os.listdir(_self.path):
+   #ndir = len(os.listdir(_self.path))
+   #_self.dir = _dir + str(ndir)
+   _self.dir = _dir
+   create_dir = os.mkdir(_self.path + '/' + _self.dir)
+
   else:
-   vtkFile = open(_dir + '/' + _file + '-' + str(_iter) + '.vtk', 'w')
-   _self.vtkHeader(vtkFile,_iter)
+   _self.dir = _dir
+
+
+ def saveVTK(_self,_file):
+
+  vtkFile = open(_self.path + '/' + _self.dir + '/' + _file + '.vtk', 'w')
+  _self.vtkHeader(vtkFile)
 
   _self.vtkCoords(vtkFile)
   _self.vtkCellArray(vtkFile)
@@ -123,17 +137,17 @@ class Linear1D:
 
   _file.write( "\n" )
 
- def printMeshReport(_self):
-  """
-   Print mesh report for lineMesh and Mesh
-  """
-  print ""
-  print ""
-  print "|" + "-"*30 + " Mesh Report " + "-"*30 + "|"
-  print " "*5 + "number of 2D points (npoints):          " + \
-        str(_self.npoints)
-  print " "*5 + "number of triangles (nelem):          " + \
-        str(_self.nelem)
+# def printMeshReport(_self):
+#  """
+#   Print mesh report for lineMesh and Mesh
+#  """
+#  print ""
+#  print ""
+#  print "|" + "-"*30 + " Mesh Report " + "-"*30 + "|"
+#  print " "*5 + "number of 2D points (npoints):          " + \
+#        str(_self.npoints)
+#  print " "*5 + "number of triangles (nelem):          " + \
+#        str(_self.nelem)
 #--------------------------------------------------
 #   print ""
 #   for nb in range(0,_self.mesh.elemIdRegion.max()+1):
@@ -141,25 +155,10 @@ class Linear1D:
 #    print " "*5 + "  |length (averageLength):              " + \
 #         str(_self.mesh.averageEdgeLength)
 #-------------------------------------------------- 
-
-  print "|" + "-"*73 + "|"
-  print ""
-  print ""
-
-
-
-# Create a directory
-#---------------------------------------------------
-# def create_dir(_self)
-#  if not 'results' in os.listdir('./'):
-#   os.mkdir('./results')
 #
-#  _self.path = './results'
-#  ndir = len(os.listdir(_self.path))
-#  _self.dir = 'result_v%s' %ndir
-#  create_dir = os.mkdir(_self.path + '/' + _self.dir)
-#-----------------------------------------------------
-
+#  print "|" + "-"*73 + "|"
+#  print ""
+#  print ""
 
 
 
@@ -176,14 +175,28 @@ class Linear2D:
   _self.vec1 = _vec1
   _self.vec2 = _vec2
 
- def saveVTK(_self,_dir,_file,_iter=None):
 
-  if _iter is None:
-   vtkFile = open(_dir + '/' + _file + '.vtk', 'w')
-   _self.vtkHeader(vtkFile)
+ def create_dir(_self,_dir):
+
+  _self.path = '/home/marquesleandro'
+  if not 'results' in os.listdir(_self.path):
+   os.mkdir('/home/marquesleandro/results')
+
+  _self.path = '/home/marquesleandro/results'
+  if not _dir in os.listdir(_self.path):
+   #ndir = len(os.listdir(_self.path))
+   #_self.dir = _dir + str(ndir)
+   _self.dir = _dir
+   create_dir = os.mkdir(_self.path + '/' + _self.dir)
+
   else:
-   vtkFile = open(_dir + '/' + _file + '-' + str(_iter) + '.vtk', 'w')
-   _self.vtkHeader(vtkFile,_iter)
+   _self.dir = _dir
+
+
+ def saveVTK(_self,_file):
+
+  vtkFile = open(_self.path + '/' + _self.dir + '/' + _file + '.vtk', 'w')
+  _self.vtkHeader(vtkFile)
 
   _self.vtkCoords(vtkFile)
   _self.vtkCellArray(vtkFile)
@@ -268,17 +281,18 @@ class Linear2D:
 
   _file.write( "\n" )
 
- def printMeshReport(_self):
-  """
-   Print mesh report for lineMesh and Mesh
-  """
-  print ""
-  print ""
-  print "|" + "-"*30 + " Mesh Report " + "-"*30 + "|"
-  print " "*5 + "number of 2D points (npoints):          " + \
-        str(_self.npoints)
-  print " "*5 + "number of triangles (nelem):          " + \
-        str(_self.nelem)
+
+# def printMeshReport(_self):
+#  """
+#   Print mesh report for lineMesh and Mesh
+#  """
+#  print ""
+#  print ""
+#  print "|" + "-"*30 + " Mesh Report " + "-"*30 + "|"
+#  print " "*5 + "number of 2D points (npoints):          " + \
+#        str(_self.npoints)
+#  print " "*5 + "number of triangles (nelem):          " + \
+#        str(_self.nelem)
 #--------------------------------------------------
 #   print ""
 #   for nb in range(0,_self.mesh.elemIdRegion.max()+1):
@@ -286,24 +300,12 @@ class Linear2D:
 #    print " "*5 + "  |length (averageLength):              " + \
 #         str(_self.mesh.averageEdgeLength)
 #-------------------------------------------------- 
-
-  print "|" + "-"*73 + "|"
-  print ""
-  print ""
-
-
-
-# Create a directory
-#---------------------------------------------------
-# def create_dir(_self)
-#  if not 'results' in os.listdir('./'):
-#   os.mkdir('./results')
 #
-#  _self.path = './results'
-#  ndir = len(os.listdir(_self.path))
-#  _self.dir = 'result_v%s' %ndir
-#  create_dir = os.mkdir(_self.path + '/' + _self.dir)
-#-----------------------------------------------------
+#  print "|" + "-"*73 + "|"
+#  print ""
+#  print ""
+
+
 
 class Mini:
  def __init__(_self,_x,_y,_IEN,_npoints,_nelem,_scalar,_vec1,_vec2):
