@@ -22,7 +22,7 @@ def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
  for i in range(0,_npoints):
   x = float(_xd[i])
 
-  ww = 0
+  breaking = 0
   length = []
 
   for e in range(0,_nelem):
@@ -50,7 +50,7 @@ def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
     scalar2 = _scalar[v2]
 
     scalar[i] = Ni*scalar1 + Nj*scalar2
-    ww = 1
+    breaking = 1
     break
 
    else:
@@ -66,7 +66,7 @@ def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
     length.append(a_1)
     length.append(a_2)
    
-  if ww == 0:
+  if breaking == 0:
    length_min = min(length, key=lambda k:k[1])
    node = length_min[0]
    scalar[i] = _scalar[node]
@@ -83,8 +83,8 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
 
   node = i
   length = []
-  ww = 1
-  while ww == 1:
+  breaking = 0
+  while breaking == 0:
    for e in _neighbors_elements[node]:
     v1 = _IEN[e][0]
     v2 = _IEN[e][1]
@@ -110,7 +110,7 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
      scalar2 = _scalar[v2]
 
      scalar[i] = Ni*scalar1 + Nj*scalar2
-     ww = 0
+     breaking = 1
      break
 
     else:
@@ -126,11 +126,11 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
      length.append(a_1)
      length.append(a_2)
    
-     ww = 1
+     breaking = 0
 
 
    # first neighbor is element found 
-   if ww == 0:
+   if breaking == 1:
      break
  
  
@@ -141,10 +141,10 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
     node = length_min[0]
 
     # outside domain
-    if node == node1 and ww == 1:
+    if node == node1 and breaking == 0:
      scalar[i] = _scalar[node]
      
-     ww = 0
+     breaking = 1
      break
 
 
@@ -160,7 +160,7 @@ def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
   x = float(_xd[i])
   y = float(_yd[i])
   
-  ww = 0
+  breaking = 0
   length = []
 
   for e in range(0,_nelem):
@@ -215,7 +215,7 @@ def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
     scalar3 = _scalar[v3]
 
     scalar[i] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
-    ww = 1
+    breaking = 1
     break
 
    else:
@@ -239,7 +239,7 @@ def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
     length.append(a_2)
     length.append(a_3)
    
-  if ww == 0:
+  if breaking == 0:
    length_min = min(length, key=lambda k:k[1])
    node = length_min[0]
    scalar[i] = _scalar[node]
@@ -258,9 +258,9 @@ def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
 
   node = i
   length = []
-  ww = 1
+  breaking = 0
 
-  while ww == 1:
+  while breaking == 0:
    for e in _neighbors_elements[node]:
     v1 = _IEN[e][0]
     v2 = _IEN[e][1]
@@ -315,7 +315,7 @@ def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
 
      scalar[i] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
 
-     ww = 0
+     breaking = 1
      break
 
 
@@ -340,11 +340,11 @@ def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
      length.append(a_2)
      length.append(a_3)
    
-     ww = 1
+     breaking = 0
 
 
    # first neighbor is element found 
-   if ww == 0:
+   if breaking == 1:
      break
  
  
@@ -355,10 +355,10 @@ def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
     node = length_min[0]
 
     # outside domain
-    if node == node1 and ww == 1:
+    if node == node1 and breaking == 0:
      scalar[i] = _scalar[node]
      
-     ww = 0
+     breaking = 1
      break
 
 
