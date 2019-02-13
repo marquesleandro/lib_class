@@ -39,7 +39,7 @@ def Linear1D(_GL, _npoints, _nelem, _IEN, _x):
 
     K[ii,jj] += (1.0/dx)*linear.K_elem[i][j]
     M[ii,jj] += (dx/6.0)*linear.M_elem[i][j]
-    G[ii,jj] += (1.0/dx)*linear.G_elem[i][j]
+    G[ii,jj] += (1.0/2.0)*linear.G_elem[i][j]
 
 
  return K, M, G

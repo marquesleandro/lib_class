@@ -452,8 +452,8 @@ class Convection:
   _self.vy = np.zeros([_self.npoints,1], dtype = float)
 
   for i in range(0,_self.npoints):
-   _self.vx[i] = -_self.y[i]/3.0
-   _self.vy[i] = _self.x[i]/3.0
+   _self.vx[i] = _self.y[i]/3.0
+   _self.vy[i] = -_self.x[i]/3.0
 
   a = 0.0
   b = -1.5
