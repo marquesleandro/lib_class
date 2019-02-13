@@ -5,13 +5,14 @@
 # e-mail: marquesleandro67@gmail.com
 # ==========================================
 
-# This code searches a file until 10 directories
+# This code searches a file until 12 directories
 
 
 # ------------------------------------------------------------------
 # Use:
-#name_file = 'file'
-#path = search_file.Find(name_file)
+# directory = search_file.Find(mesh_name)
+# if directory == 'File does not found':
+#  sys.exit()
 # ------------------------------------------------------------------
 
 
@@ -20,42 +21,56 @@
 import os
 
 def Find(_file):
-  path = '/home/marquesleandro'
   file = _file
-  files1 = filter(os.path.isdir,os.listdir(os.curdir))
+  
+  # Exit any directory to /home/user
+  path = '/home/marquesleandro'
+  os.chdir(path)
+
+  # Directories list only
+  files1 = filter(os.path.isdir,os.listdir(path))
+
   breaking = 0
 
   if file in os.listdir(path):
-   print path
+   path = path
 
-  elif files1 == []:
-   print "Error"
-
-  else:
+  # If there is any directories, access them
+  else:   
    for dir1 in files1:
-    os.chdir(dir1)
+    
+    # Access directory 1
     path = path + '/' + dir1
-    files2 = filter(os.path.isdir,os.listdir(os.curdir))
+    os.chdir(path)
+    
+    # Directories list only
+    files2 = filter(os.path.isdir,os.listdir(path))
+    
     if file in os.listdir(path):
      breaking = 1
      break
 
+    # There are not directories
     elif files2 == []:
      aa = path.split('/')
      directory = ''
    
+     # Reduce a directory
      for i in range(1,len(aa)-1):
       bb = aa[i]
       directory = directory + '/' + bb
  
      path = directory
      os.chdir(path)
-    
+   
+    # If there is any directories, access them
+    # The statements onwards are equivalent to previous statement
     else:
      for dir2 in files2:
-      os.chdir(dir2)
       path = path + '/' + dir2
-      files3 = filter(os.path.isdir,os.listdir(os.curdir))
+      os.chdir(path)
+      files3 = filter(os.path.isdir,os.listdir(path))
+      
       if file in os.listdir(path):
        breaking = 1
        break
@@ -73,9 +88,10 @@ def Find(_file):
    
       else:
        for dir3 in files3:
-        os.chdir(dir3)
         path = path + '/' + dir3
-        files4 = filter(os.path.isdir,os.listdir(os.curdir))
+        os.chdir(path)
+        files4 = filter(os.path.isdir,os.listdir(path))
+        
         if file in os.listdir(path):
          breaking = 1
          break
@@ -93,9 +109,10 @@ def Find(_file):
   
         else:
          for dir4 in files4:
-          os.chdir(dir4)
           path = path + '/' + dir4
-          files5 = filter(os.path.isdir,os.listdir(os.curdir))
+          os.chdir(path)
+          files5 = filter(os.path.isdir,os.listdir(path))
+          
           if file in os.listdir(path):
            breaking = 1
            break
@@ -113,9 +130,10 @@ def Find(_file):
    
           else:
            for dir5 in files5:
-            os.chdir(dir5)
             path = path + '/' + dir5
-            files6 = filter(os.path.isdir,os.listdir(os.curdir))
+            os.chdir(path)
+            files6 = filter(os.path.isdir,os.listdir(path))
+            
             if file in os.listdir(path):
              breaking = 1
              break
@@ -133,9 +151,10 @@ def Find(_file):
   
             else:
              for dir6 in files6:
-              os.chdir(dir6)
               path = path + '/' + dir6
-              files7 = filter(os.path.isdir,os.listdir(os.curdir))
+              os.chdir(path)
+              files7 = filter(os.path.isdir,os.listdir(path))
+              
               if file in os.listdir(path):
                breaking = 1
                break
@@ -153,9 +172,10 @@ def Find(_file):
   
               else:
                for dir7 in files7:
-                os.chdir(dir7)
                 path = path + '/' + dir7
-                files8 = filter(os.path.isdir,os.listdir(os.curdir))
+                os.chdir(path)
+                files8 = filter(os.path.isdir,os.listdir(path))
+                
                 if file in os.listdir(path):
                  breaking = 1
                  break
@@ -173,9 +193,10 @@ def Find(_file):
   
                 else:
                  for dir8 in files8:
-                  os.chdir(dir8)
                   path = path + '/' + dir8
-                  files9 = filter(os.path.isdir,os.listdir(os.curdir))
+                  os.chdir(path)
+                  files9 = filter(os.path.isdir,os.listdir(path))
+                  
                   if file in os.listdir(path):
                    breaking = 1
                    break
@@ -194,9 +215,10 @@ def Find(_file):
 
                   else:
                    for dir9 in files9:
-                    os.chdir(dir9)
                     path = path + '/' + dir9
-                    files10 = filter(os.path.isdir,os.listdir(os.curdir))
+                    os.chdir(path)
+                    files10 = filter(os.path.isdir,os.listdir(path))
+                    
                     if file in os.listdir(path):
                      breaking = 1
                      break
@@ -214,9 +236,10 @@ def Find(_file):
    
                     else:
                      for dir10 in files10:
-                      os.chdir(dir10)
                       path = path + '/' + dir10
-                      files11 = filter(os.path.isdir,os.listdir(os.curdir))
+                      os.chdir(path)
+                      files11 = filter(os.path.isdir,os.listdir(path))
+                      
                       if file in os.listdir(path):
                        breaking = 1
                        break
@@ -234,9 +257,10 @@ def Find(_file):
    
                       else:
                        for dir11 in files11:
-                        os.chdir(dir11)
                         path = path + '/' + dir11
-                        files12 = filter(os.path.isdir,os.listdir(os.curdir))
+                        os.chdir(path)
+                        files12 = filter(os.path.isdir,os.listdir(path))
+                        
                         if file in os.listdir(path):
                          breaking = 1
                          break
@@ -267,7 +291,8 @@ def Find(_file):
   
                        if breaking == 1:
                         break
-    
+                       
+                       # The search final 
                        else:  
                         aa = path.split('/')
                         directory = ''
@@ -279,10 +304,12 @@ def Find(_file):
                         path = directory
                         os.chdir(path)
  
- 
+                     # Break directories for-loop 
                      if breaking == 1:
                        break
-    
+                     
+                     # If file does not found, reduce a directory
+                     # The statements onwards are equivalent to previous statement
                      else:  
                       aa = path.split('/')
                       directory = ''
@@ -406,7 +433,14 @@ def Find(_file):
       path = directory
       os.chdir(path)
 
+  if breaking == 1:
+   return path
+   
+  else:
+   print ""
+   print " Error: File does not found"
+   print ""
+   
+   path = 'File does not found'
+   return path
 
-
-
-  return path 

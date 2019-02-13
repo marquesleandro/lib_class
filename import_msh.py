@@ -11,11 +11,9 @@
 
 # ------------------------------------------------------------------
 # Use:
-# name_mesh = 'file.msh'
-# number_equations = number
-# mesh = trimsh_mod.Linear('directory', name_mesh, number_equations)
-# mesh.ien()
+# mesh = import_msh.Linear2D(directory,mesh_name,equation_number)
 # mesh.coord()
+# mesh.ien()
 # ------------------------------------------------------------------
 
 

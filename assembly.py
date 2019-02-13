@@ -7,11 +7,11 @@
 
 # This code is used for to assembly global matrices
 
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Use:
 # Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy = 
-# assembly_linear(mesh.npoints, mesh.nelem, mesh.IEN, mesh.x, mesh.y)
-# ------------------------------------------------------------------
+# assembly.Linear2D(mesh.GL, mesh.npoints, mesh.nelem, mesh.IEN, mesh.x, mesh.y)
+# ------------------------------------------------------------------------------
 
 import numpy as np
 import gaussian_quadrature

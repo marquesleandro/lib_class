@@ -7,14 +7,16 @@
 
 # This code is used for to use semi-lagrangian scheme
 
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
 # Use:
-# scalar_d = semi_lagrangian(mesh.npoints, mesh.IEN, mesh.x, mesh.y, x_d, y_d, mesh.neighbors_elements, scalar_n)
-# ------------------------------------------------------------------
+# scalar_d = semi_lagrangian.Linear2D(
+# mesh.npoints, mesh.IEN, mesh.x, mesh.y, x_d, y_d, mesh.neighbors_elements, scalar_n)
+# ------------------------------------------------------------------------------------
 
 import numpy as np
 
 
+# 1D Semi-Lagrangian using npoints x nelem to find departure node
 def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
@@ -74,6 +76,7 @@ def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
  return scalar  
 
 
+# 1D Semi-Lagrangian using npoints x neighbors_elements to find departure node
 def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
@@ -152,6 +155,7 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
 
 
 
+# 2D Semi-Lagrangian using npoints x nelem to find departure node
 def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
@@ -248,6 +252,7 @@ def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
 
 
 
+# 2D Semi-Lagrangian using npoints x neighbors_elements to find departure node
 def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
  
  scalar = np.zeros([_npoints,1], dtype = float) 
