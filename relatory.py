@@ -1,10 +1,11 @@
 import os
 import datetime
 
-def export(_directory_name, _simulator, _mesh_name, _equation_number, _npoints, _nelem, _length_min, _dt, _nt, _Re, _Sc, _import_mesh_time, _assembly_time, _bc_apply_time, _solution_time):
+def export(_directory_name, _simulator, _scheme, _mesh_name, _equation_number, _npoints, _nelem, _length_min, _dt, _nt, _Re, _Sc, _import_mesh_time, _assembly_time, _bc_apply_time, _solution_time):
 
  directory_name = _directory_name
  simulator = _simulator
+ scheme = _scheme
 
  mesh_name = _mesh_name
  equation_number = _equation_number
@@ -41,6 +42,7 @@ def export(_directory_name, _simulator, _mesh_name, _equation_number, _npoints, 
  relatory.write('\n')
 
  relatory.write(' Simulator: ' + str(simulator) + '\n')
+ relatory.write(' Scheme: ' + str(scheme) + '\n')
  relatory.write('\n')
 
  relatory.write(' ----------------------------- \n')

@@ -764,8 +764,9 @@ class Convection1D:
   for i in range(0, _self.npoints):
    x = _self.x[i]
 
-   if x < 0.2:
-    _self.c[i] = np.sin((x/0.1)*(np.pi/2))
+   if x >= 2 and x <= 4:
+    alpha = (x - 2)/(3 - 2)
+    _self.c[i] = np.sin(alpha*(np.pi/2))
 
 
 
