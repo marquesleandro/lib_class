@@ -438,9 +438,9 @@ def Find(_file):
    
   else:
    print ""
-   print " Error: File does not found"
+   print " Error: File not found"
    print ""
    
-   path = 'File does not found'
+   path = 'File not found'
    return path
 
