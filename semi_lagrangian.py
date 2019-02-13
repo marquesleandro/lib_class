@@ -10,19 +10,20 @@
 # ------------------------------------------------------------------------------------
 # Use:
 # scalar_d = semi_lagrangian.Linear2D(
-# mesh.npoints, mesh.IEN, mesh.x, mesh.y, x_d, y_d, mesh.neighbors_elements, scalar_n)
+# mesh.npoints, mesh.neighbors_elements, mesh.IEN, mesh.x, mesh.y, vx, vy, dt, scalar_n)
 # ------------------------------------------------------------------------------------
 
 import numpy as np
 
 
 # 1D Semi-Lagrangian using npoints x nelem to find departure node
-def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
- 
+def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _vx, _dt, _scalar):
+ xd = _xn - _vx*_dt
+
  scalar = np.zeros([_npoints,1], dtype = float) 
 
  for i in range(0,_npoints):
-  x = float(_xd[i])
+  x = float(xd[i])
 
   breaking = 0
   length = []
@@ -77,12 +78,13 @@ def Linear1D_v2(_npoints, _nelem, _IEN, _xn, _xd, _scalar):
 
 
 # 1D Semi-Lagrangian using npoints x neighbors_elements to find departure node
-def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
+def Linear1D(_npoints, _neighbors_elements, _IEN, _xn, _vx, _dt, _scalar):
+ xd = _xn - _vx*_dt
  
  scalar = np.zeros([_npoints,1], dtype = float) 
 
  for i in range(0,_npoints):
-  x = float(_xd[i])
+  x = float(xd[i])
 
   node = i
   length = []
@@ -137,7 +139,7 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
      break
  
  
-   # coordinate doesn't found
+   # coordinate not found
    else:
     length_min = min(length, key=lambda k:k[1])
     node1 = node
@@ -156,13 +158,15 @@ def Linear1D(_npoints, _IEN, _xn, _xd, _neighbors_elements, _scalar):
 
 
 # 2D Semi-Lagrangian using npoints x nelem to find departure node
-def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
+def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):
+ xd = _xn - _vx*_dt
+ yd = _yn - _vy*_dt
  
  scalar = np.zeros([_npoints,1], dtype = float) 
  
  for i in range(0,_npoints):
-  x = float(_xd[i])
-  y = float(_yd[i])
+  x = float(xd[i])
+  y = float(yd[i])
   
   breaking = 0
   length = []
@@ -253,13 +257,15 @@ def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _xd, _yd, _scalar):
 
 
 # 2D Semi-Lagrangian using npoints x neighbors_elements to find departure node
-def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
+def Linear2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):
+ xd = _xn - _vx*_dt
+ yd = _yn - _vy*_dt
  
  scalar = np.zeros([_npoints,1], dtype = float) 
  
  for i in range(0,_npoints):
-  x = float(_xd[i])
-  y = float(_yd[i])
+  x = float(xd[i])
+  y = float(yd[i])
 
   node = i
   length = []
@@ -353,7 +359,7 @@ def Linear2D(_npoints, _IEN, _xn, _yn, _xd, _yd, _neighbors_elements, _scalar):
      break
  
  
-   # coordinate doesn't found
+   # coordinate not found
    else:
     length_min = min(length, key=lambda k:k[1])
     node1 = node
