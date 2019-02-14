@@ -1,3 +1,20 @@
+# ==========================================
+# Code created by Leandro Marques at 02/2019
+# Gesar Search Group
+# State University of the Rio de Janeiro
+# e-mail: marquesleandro67@gmail.com
+# ==========================================
+
+# This code is used to create a simulation relatory
+
+
+# ------------------------------------------------------------------
+# Use:
+# relatory.export(directory_name, sys.argv[0], scheme, mesh_name, equation_number, mesh.npoints, mesh.nelem, mesh.length_min, dt, nt, Re, Sc, import_mesh_time, assembly_time, bc_apply_time, solution_time)
+# ------------------------------------------------------------------
+
+
+
 import os
 import datetime
 
