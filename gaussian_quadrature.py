@@ -1,11 +1,9 @@
-# ==========================================
-# Code created by DSc. Gustavo Rabello 
-# and modificated by Leandro Marques
+# ======================================
+# Code created by Leandro Marques
 # Gesar Search Group
 # State University of the Rio de Janeiro
-# e-mail: gustavo.rabello@uerj.br
 # e-mail: marquesleandro67@gmail.com
-# ==========================================
+# ======================================
 
 # This code is used to assemble 
 # the elementary arrays
@@ -36,40 +34,201 @@
 #                     For 1D pg. 193
 
 
+import sys
 import numpy as np
 
 class Linear1D:
- def __init__(_self):
-  _self.K_elem = np.array([[1,-1],[-1,1]])
-  _self.M_elem = np.array([[2,1],[1,2]])
-  _self.G_elem = np.array([[-1,1],[-1,1]])
+ def __init__(_self, _x, _IEN):
+  _self.x = _x
+  _self.IEN = _IEN
+  _self.NUMNODE = 2  #Linear One-dimensional Element - 2 Nodes
 
 
 
-class Linear2D_v2:
- def __init__(_self, _x, _y, _IEN):
+ def GQNUM3(_self):
+  _self.NUMGP = 3  #Number of Gauss Points
+
+
+  #                                l1     
+  _self.GQPoints = np.array([[-0.774596669], 
+                             [ 0.000000000], 
+                             [ 0.774596669]])
+
+
+  #                                 w
+  _self.GQWeights = np.array([[0.555555556], 
+                              [0.888888889], 
+                              [0.555555556]])
+
+
+
+ 
+ def GQNUM4(_self):
+  _self.NUMGP = 4  #Number of Gauss Points
+
+
+  #                               l1     
+  _self.GQPoints = np.array([[-0.861136], 
+                             [-0.339981], 
+                             [ 0.339981], 
+                             [ 0.861136]])
+
+
+  #                                w
+  _self.GQWeights = np.array([[0.347855], 
+                              [0.652145], 
+                              [0.652145], 
+                              [0.347855]])
+
+
+
+
+ def GQNUM5(_self):
+  _self.NUMGP = 5  #Number of Gauss Points
+
+
+  #                               l1     
+  _self.GQPoints = np.array([[-0.906180], 
+                             [-0.538469], 
+                             [ 0.000000], 
+                             [ 0.538469], 
+                             [ 0.906180]])
+
+
+  #                                w
+  _self.GQWeights = np.array([[0.236927], 
+                              [0.478629], 
+                              [0.568889], 
+                              [0.478629], 
+                              [0.236927]])
+
+
+
+
+
+ def numerical(_self,_e):
+
+  N = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+  dNdl1 = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  
+  dxdl1 = np.zeros([_self.NUMGP,1], dtype = float)
+
+  J = np.zeros([1,1], dtype = float)
+  jacobian = np.zeros([_self.NUMGP,1], dtype = float)
+  
+  dNdx = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+
+  # A loop is required for each pair of coordinates (l1,l2)
+  for k in range(0,_self.NUMGP):
+    
+   # Area Coordinates
+   L1 = (1.0/2.0)*(1.0 - _self.GQPoints[k][0])      #L1 = (1/2)*(1 - l1)
+   L2 = (1.0/2.0)*(1.0 + _self.GQPoints[k][0])      #L2 = (1/2)*(1 + l1)
+
+   # Shape Functions
+   N[k][0] = L1  #N1 = L1
+   N[k][1] = L2  #N2 = L2
+
+   # Shape Functions Derivatives in respect to l1
+   dNdl1[k][0] = -0.5   #dN1/dl1
+   dNdl1[k][1] =  0.5   #dN2/dl1
+
+
+   # Coordinate Transfomation
+   # Lewis pag. 64 Eq. 3.108 for 1D
+   for i in range(0,_self.NUMNODE):
+    ii = _self.IEN[_e][i]
+    
+    dxdl1[k] += _self.x[ii]*dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
+
+   # Jacobian Matrix
+   # Lewis pag. 64 Eq. 3.108
+   J[0][0] = dxdl1[k]
+
+   jacobian[k] = np.linalg.det(J)
+
+
+   # Shape Functions Derivatives in respect to x
+   # Lewis pag. 63 Eq. 3.107
+   for i in range(0,_self.NUMNODE):
+    dNdx[k][i] = (1.0/jacobian[k])*dNdl1[k][i]
+
+ 
+  _self.mass = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  
+  # Elementary Matrices 
+  for k in range(0,_self.NUMGP): 
+   for i in range(0,_self.NUMNODE):
+    for j in range(0,_self.NUMNODE):
+    
+     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]
+     _self.kx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]
+     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]
+     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]
+   
+
+
+
+ def analytic(_self, _e):
+  v1 = _self.IEN[_e][0]
+  v2 = _self.IEN[_e][1]
+  
+  dx = _self.x[v2] - _self.x[v1]
+
+  _self.kx = (1.0/dx)*np.array([[1,-1],[-1,1]])
+  _self.mass = (dx/6.0)*np.array([[2,1],[1,2]])
+  _self.gx = (1.0/2.0)*np.array([[-1,1],[-1,1]])
+
+
+
+
+
+
+
+
+class Linear2D:
+ def __init__(_self, _x, _y, _IEN, _GAUSSPOINTS):
   _self.x = _x
   _self.y = _y
   _self.IEN = _IEN
   _self.NUMNODE = 3  #Linear Triangle Element - 3 Nodes
 
-
- def GPNUM_4(_self):
-  _self.NUMGP = 4  #Number of Gauss Points
-
-
-  #                                 l1                 l2
-  _self.GQPoints = np.array([[0.33333333333333, 0.33333333333333], 
-                             [0.60000000000000, 0.20000000000000], 
-                             [0.20000000000000, 0.60000000000000], 
-                             [0.20000000000000, 0.20000000000000]])
+  if _GAUSSPOINTS == 4:
+   _self.NUMGP = 4  #Number of Gauss Points
 
 
-  #                                    w
-  _self.GQWeights = np.array([[-0.562500000000000], 
-                              [0.520833333333333], 
-                              [0.520833333333333], 
-                              [0.520833333333333]])
+   #                                 l1                 l2
+   _self.GQPoints = np.array([[0.33333333333333, 0.33333333333333], 
+                              [0.60000000000000, 0.20000000000000], 
+                              [0.20000000000000, 0.60000000000000], 
+                              [0.20000000000000, 0.20000000000000]])
+
+
+   #                                    w
+   _self.GQWeights = np.array([[-0.56250000000000], 
+                               [0.520833333333333], 
+                               [0.520833333333333], 
+                               [0.520833333333333]])
+
+   _self.polynomial_order = 'Linear Element'
+   _self.gausspoints = 4
+
+  else:
+   print ""
+   print " Error: Gauss Points not found"
+   print ""
+   sys.exit()
+
 
 
 
@@ -91,39 +250,44 @@ class Linear2D_v2:
   dNdx = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
   dNdy = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
 
+
+  # A loop is required for each pair of coordinates (l1,l2)
   for k in range(0,_self.NUMGP):
     
    # Area Coordinates
-   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   # L1 = 1 - l1 - l2
-   L2 = _self.GQPoints[k][0]                                # L2 = l1
-   L3 = _self.GQPoints[k][1]                                # L3 = l2
+   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L1 = 1 - l1 - l2
+   L2 = _self.GQPoints[k][0]                                #L2 = l1
+   L3 = _self.GQPoints[k][1]                                #L3 = l2
 
    # Shape Functions
-   N[k][0] = L1  # N1 = L1
-   N[k][1] = L2  # N2 = L2
-   N[k][2] = L3  # N3 = L3
+   N[k][0] = L1  #N1 = L1
+   N[k][1] = L2  #N2 = L2
+   N[k][2] = L3  #N3 = L3
 
    # Shape Functions Derivatives in respect to l1
-   dNdl1[k][0] = -1.0  #dN1/dl1
-   dNdl1[k][1] = 1.0   #dN2/dl1
-   dNdl1[k][2] = 0.0   #dN3/dl1
+   dNdl1[k][0] = -1.0   #dN1/dl1
+   dNdl1[k][1] =  1.0   #dN2/dl1
+   dNdl1[k][2] =  0.0   #dN3/dl1
 
    # Shape Functions Derivatives in respect to l2
-   dNdl2[k][0] = -1.0  #dN1/dl2
-   dNdl2[k][1] = 0.0   #dN2/dl2
-   dNdl2[k][2] = 1.0   #dN3/dl2
+   dNdl2[k][0] = -1.0   #dN1/dl2
+   dNdl2[k][1] =  0.0   #dN2/dl2
+   dNdl2[k][2] =  1.0   #dN3/dl2
 
 
    # Coordinate Transfomation
+   # Lewis pag. 64 Eq. 3.108 for 1D
+   # Lewis pag. 66 Eq. 3.121 for 2D
    for i in range(0,_self.NUMNODE):
     ii = _self.IEN[_e][i]
     
-    dxdl1[k] += _self.x[ii]*dNdl1[k][i]
-    dxdl2[k] += _self.x[ii]*dNdl2[k][i]
-    dydl1[k] += _self.y[ii]*dNdl1[k][i]
-    dydl2[k] += _self.y[ii]*dNdl2[k][i]
+    dxdl1[k] += _self.x[ii]*dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
+    dydl1[k] += _self.y[ii]*dNdl1[k][i]   # dy/dl1 = y1*dN1/dl1 + y2*dN2/dl1 + y3*dN3/dl1 ...
+    dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
+    dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
 
    # Jacobian Matrix
+   # Lewis pag. 64 Eq. 3.114
    J[0][0] = dxdl1[k]
    J[0][1] = dydl1[k]
    J[1][0] = dxdl2[k]
@@ -135,9 +299,8 @@ class Linear2D_v2:
    # Shape Functions Derivatives in respect to x and y
    # Lewis pag. 65 Eq. 3.116
    for i in range(0,_self.NUMNODE):
-    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl1[k][i]*dydl1[k])
-    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl2[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
-
+    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
+    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
 
  
   _self.mass = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
@@ -167,11 +330,116 @@ class Linear2D_v2:
     
      _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
-    
+   
+
+ 
+ def analytic(_self, _e):
+
+  i = _self.IEN[_e][0]
+  j = _self.IEN[_e][1]
+  k = _self.IEN[_e][2]
+
+  bi = _self.y[j]-_self.y[k]
+  bj = _self.y[k]-_self.y[i]
+  bk = _self.y[i]-_self.y[j]
+  ci = _self.x[k]-_self.x[j]
+  cj = _self.x[i]-_self.x[k]
+  ck = _self.x[j]-_self.x[i]
+
+
+  A = 0.5*np.linalg.det(np.array([[1, _self.x[i], _self.y[i]],
+ 				  [1, _self.x[j], _self.y[j]],
+				  [1, _self.x[k], _self.y[k]]]))
+
+
+  _self.mass = (A/12.)*np.array([[2.,1.,1.],
+                                 [1.,2.,1.],
+                                 [1.,1.,2.]])
+
+  _self.q = (A/3.)*np.ones([3,1], dtype = float)
+  
+  _self.gx = (1./6)*np.array([[bi,bj,bk],
+                              [bi,bj,bk],
+                              [bi,bj,bk]]) 
+   
+  _self.gy = (1./6)*np.array([[ci,cj,ck],
+                              [ci,cj,ck],
+                              [ci,cj,ck]])
+
+  _self.kxx = (1./(4*A))*np.array([[bi*bi,bi*bj,bi*bk],
+                                   [bj*bi,bj*bj,bj*bk],
+                                   [bk*bi,bk*bj,bk*bk]])
+
+  _self.kyy = (1./(4*A))*np.array([[ci*ci,ci*cj,ci*ck],
+                                   [cj*ci,cj*cj,cj*ck],
+                                   [ck*ci,ck*cj,ck*ck]])
+
+  _self.kxy = (1./(4*A))*np.array([[bi*ci,bi*cj,bi*ck],
+                                   [bj*ci,bj*cj,bj*ck],
+                                   [bk*ci,bk*cj,bk*ck]])
+
+  _self.kyx = (1./(4*A))*np.array([[ci*bi,ci*bj,ci*bk],
+                                   [cj*bi,cj*bj,cj*bk],
+                                   [ck*bi,ck*bj,ck*bk]])
 
 
 
-class Linear2D:
+
+ def axisymmetric(_self, _e):
+  _self.r = _self.y
+  _self.z = _self.x
+
+  i = _self.IEN[_e][0]
+  j = _self.IEN[_e][1]
+  k = _self.IEN[_e][2]
+
+  bi = _self.z[j] - _self.z[k]
+  bj = _self.z[k] - _self.z[i]
+  bk = _self.z[i] - _self.z[j]
+  ci = _self.r[k] - _self.r[j]
+  cj = _self.r[i] - _self.r[k]
+  ck = _self.r[j] - _self.r[i]
+
+  A = 0.5*np.linalg.det(np.array([[1, _self.r[i], _self.z[i]],
+ 				  [1, _self.r[j], _self.z[j]],
+				  [1, _self.r[k], _self.z[k]]]))
+
+  r = (_self.r[i] + _self.r[j] + _self.r[k])/3.
+
+  r_vec = np.array([[_self.r[i]],
+                    [_self.r[j]],
+                    [_self.r[k]]])
+
+  _self.M_elem = (A/12.)*np.array([[2.,1.,1.],
+				   [1.,2.,1.],
+				   [1.,1.,2.]])
+
+  _self.Q_elem = (2*np.pi)*np.dot(_self.M_elem,r_vec)
+  
+  _self.Gr_elem = (1./6)*np.array([[bi,bj,bk],
+                                   [bi,bj,bk],
+                                   [bi,bj,bk]]) 
+   
+  _self.Gz_elem = (1./6)*np.array([[ci,cj,ck],
+                                   [ci,cj,ck],
+                                   [ci,cj,ck]])
+
+  _self.Kr_elem = ((2*np.pi*r)/(4*A))*np.array([[bi*bi,bj*bi,bk*bi],
+                                                [bi*bj,bj*bj,bk*bj],
+                                                [bi*bk,bj*bk,bk*bk]])
+
+  _self.Kz_elem = ((2*np.pi*r)/(4*A))*np.array([[ci*ci,cj*ci,ck*ci],
+                                                [ci*cj,cj*cj,ck*cj],
+                                                [ci*ck,cj*ck,ck*ck]])
+
+
+
+
+
+
+
+
+class Linear2D_v2:
  def __init__(_self, _x, _y, _IEN):
 
   _self.NUMRULE = 4
@@ -391,6 +659,14 @@ class Linear2D:
                                                 [ci*cj,cj*cj,ck*cj],
                                                 [ci*ck,cj*ck,ck*ck]])
 
+
+
+
+
+
+
+
+
 class Mini:
  def __init__(_self, _x, _y, _IEN):
 
@@ -492,6 +768,10 @@ class Mini:
                                  [0, 1, -1],
                                  [0, 1, -1],
                                  [0, 1, -1]])
+
+
+
+
 
  def numerical(_self,_e):
 

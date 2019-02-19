@@ -18,7 +18,7 @@
 import os
 import datetime
 
-def export(_directory_name, _simulator, _scheme, _mesh_name, _equation_number, _npoints, _nelem, _length_min, _dt, _nt, _Re, _Sc, _import_mesh_time, _assembly_time, _bc_apply_time, _solution_time):
+def export(_directory_name, _simulator, _scheme, _mesh_name, _equation_number, _npoints, _nelem, _length_min, _dt, _nt, _Re, _Sc, _import_mesh_time, _assembly_time, _bc_apply_time, _solution_time, _polynomial_order, _gausspoints):
 
  directory_name = _directory_name
  simulator = _simulator
@@ -33,6 +33,8 @@ def export(_directory_name, _simulator, _scheme, _mesh_name, _equation_number, _
  nt = _nt
  Re = _Re
  Sc = _Sc
+ polynomial_order = _polynomial_order
+ gausspoints = int(_gausspoints)
 
  import_mesh_time = round(_import_mesh_time,3)
  assembly_time = round(_assembly_time,3)
@@ -60,6 +62,8 @@ def export(_directory_name, _simulator, _scheme, _mesh_name, _equation_number, _
 
  relatory.write(' Simulator: ' + str(simulator) + '\n')
  relatory.write(' Scheme: ' + str(scheme) + '\n')
+ relatory.write(' Element Type: ' + str(polynomial_order) + '\n')
+ relatory.write(' Gaussian Quadrature (Gauss Points): ' + str(gausspoints) + '\n')
  relatory.write('\n')
 
  relatory.write(' ----------------------------- \n')

@@ -26,10 +26,10 @@ def Linear1D(_GL, _npoints, _nelem, _IEN, _x):
  G = sps.lil_matrix((_npoints,_npoints), dtype = float)
  
  
- linear = gaussian_quadrature.Linear1D()
+ linear = gaussian_quadrature.Linear1D(_x, _IEN)
 
  for e in tqdm(range(0, _nelem)):
-  dx = _x[e+1] - _x[e]
+  linear.analytic(e)
 
   for i in range(0,_GL): 
    ii = _IEN[e][i]
@@ -37,16 +37,16 @@ def Linear1D(_GL, _npoints, _nelem, _IEN, _x):
    for j in range(0,_GL):
     jj = _IEN[e][j]
 
-    K[ii,jj] += (1.0/dx)*linear.K_elem[i][j]
-    M[ii,jj] += (dx/6.0)*linear.M_elem[i][j]
-    G[ii,jj] += (1.0/2.0)*linear.G_elem[i][j]
+    K[ii,jj] += linear.kx[i][j]
+    M[ii,jj] += linear.mass[i][j]
+    G[ii,jj] += linear.gx[i][j]
 
 
  return K, M, G
 
+ 
 
-
-def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y):
+def Linear2D_v2(_GL, _npoints, _nelem, _IEN, _x, _y):
  
  Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
  Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
@@ -59,7 +59,7 @@ def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y):
  Gy = sps.lil_matrix((_npoints,_npoints), dtype = float)
 
 
- linear = gaussian_quadrature.Linear2D(_x, _y, _IEN)
+ linear = gaussian_quadrature.Linear2D_v2(_x, _y, _IEN)
 
  for e in tqdm(range(0, _nelem)):
   linear.numerical(e)
@@ -84,6 +84,47 @@ def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y):
 
 
  return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy
+
+
+def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y, _GAUSSPOINTS):
+ 
+ Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kyx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kyy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ K = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ M = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ MLump = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Gx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Gy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+
+
+ linear = gaussian_quadrature.Linear2D(_x, _y, _IEN, _GAUSSPOINTS)
+
+ for e in tqdm(range(0, _nelem)):
+  linear.numerical(e)
+
+  for i in range(0,_GL): 
+   ii = _IEN[e][i]
+  
+   for j in range(0,_GL):
+    jj = _IEN[e][j]
+
+    Kxx[ii,jj] += linear.kxx[i][j]
+    Kxy[ii,jj] += linear.kxy[i][j]
+    Kyx[ii,jj] += linear.kyx[i][j]
+    Kyy[ii,jj] += linear.kyy[i][j]
+    K[ii,jj] += linear.kxx[i][j] + linear.kyy[i][j]
+   
+    M[ii,jj] += linear.mass[i][j]
+    MLump[ii,ii] += linear.mass[i][j]
+
+    Gx[ii,jj] += linear.gx[i][j]
+    Gy[ii,jj] += linear.gy[i][j]
+
+
+ return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy, linear.polynomial_order, linear.gausspoints
+
 
 
 

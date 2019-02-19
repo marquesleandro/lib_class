@@ -13,6 +13,8 @@ class SemiImplicit_convection_diffusion1D:
 
  def taylor_galerkin(_self, _c, _vx, _dt, _M, _K, _G, _LHS, _bc_dirichlet, _bc_2):
  
+  _self.scheme_name = 'Taylor Galerkin' 
+  
   c = _c
   vx = _vx
   dt = _dt
@@ -39,6 +41,8 @@ class SemiImplicit_convection_diffusion1D:
 
 
  def semi_lagrangian(_self, _npoints, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+  
+  _self.scheme_name = 'Semi Lagrangian' 
   
   npoints = _npoints
   neighbors_elements = _neighbors_elements
@@ -71,8 +75,13 @@ class SemiImplicit_convection_diffusion1D:
 
 # Diffusion implicit and convection explicit for 2D
 class SemiImplicit_convection_diffusion2D:
+ def __init__(_self, _scheme):
+  _self.scheme = _scheme
+
  def taylor_galerkin(_self, _c, _vx, _vy, _dt, _M, _Kxx, _Kyx, _Kxy, _Kyy, _Gx, _Gy, _LHS, _bc_dirichlet, _bc_2):
- 
+
+  _self.scheme_name = 'Taylor Galerkin' 
+
   c = _c
   vx = _vx
   vy = _vy
@@ -109,6 +118,8 @@ class SemiImplicit_convection_diffusion2D:
 
 
  def semi_lagrangian(_self, _npoints, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+  
+  _self.scheme_name = 'Semi Lagrangian' 
   
   npoints = _npoints
   neighbors_elements = _neighbors_elements
