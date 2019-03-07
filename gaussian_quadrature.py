@@ -295,6 +295,14 @@ class Linear2D:
 
    jacobian[k] = np.linalg.det(J)
 
+#   jacobian_inv = np.linalg.inv(J)
+
+   # Shape Functions Derivatives in respect to x and y
+   # Lewis pag. 65 Eq. 3.115
+#   for i in range(0,_self.NUMNODE):
+#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
+#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
+
 
    # Shape Functions Derivatives in respect to x and y
    # Lewis pag. 65 Eq. 3.116
@@ -302,7 +310,8 @@ class Linear2D:
     dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
     dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
 
- 
+
+
   _self.mass = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
   _self.kxx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
   _self.kxy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
@@ -313,7 +322,10 @@ class Linear2D:
   _self.dx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
   _self.dy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
   
-  # Elementary Matrices 
+
+  # Elementary Matrices
+  # P.S: It is divided by 2 due to relation 
+  # of parallelogram and triangle areas --> DxDy = (jacobian*Dl1*Dl2)/2
   for k in range(0,_self.NUMGP): 
    for i in range(0,_self.NUMNODE):
     for j in range(0,_self.NUMNODE):
