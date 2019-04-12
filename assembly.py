@@ -13,6 +13,7 @@
 # assembly.Linear2D(mesh.GL, mesh.npoints, mesh.nelem, mesh.IEN, mesh.x, mesh.y)
 # ------------------------------------------------------------------------------
 
+import sys
 import numpy as np
 import gaussian_quadrature
 import scipy.sparse as sps
@@ -20,29 +21,52 @@ from tqdm import tqdm
 
 
 
-def Linear1D(_GL, _npoints, _nelem, _IEN, _x):
+def Element1D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _GAUSSPOINTS):
  K = sps.lil_matrix((_npoints,_npoints), dtype = float)
  M = sps.lil_matrix((_npoints,_npoints), dtype = float)
  G = sps.lil_matrix((_npoints,_npoints), dtype = float)
  
+ element1D = gaussian_quadrature.Element1D(_x, _IEN, _GAUSSPOINTS)
  
- linear = gaussian_quadrature.Linear1D(_x, _IEN)
+ if _polynomial_option == 1:
+  polynomial_order = 'Linear Element'
+  for e in tqdm(range(0, _nelem)):
+   element1D.linear(e)
 
- for e in tqdm(range(0, _nelem)):
-  linear.analytic(e)
-
-  for i in range(0,_GL): 
-   ii = _IEN[e][i]
+   for i in range(0,_GL): 
+    ii = _IEN[e][i]
   
-   for j in range(0,_GL):
-    jj = _IEN[e][j]
+    for j in range(0,_GL):
+     jj = _IEN[e][j]
 
-    K[ii,jj] += linear.kx[i][j]
-    M[ii,jj] += linear.mass[i][j]
-    G[ii,jj] += linear.gx[i][j]
+     K[ii,jj] += element1D.kx[i][j]
+     M[ii,jj] += element1D.mass[i][j]
+     G[ii,jj] += element1D.gx[i][j]
+
+ elif _polynomial_option == 2:
+  polynomial_order = 'Quadratic Element'
+  for e in tqdm(range(0, _nelem)):
+   element1D.quadratic(e)
+
+   for i in range(0,_GL): 
+    ii = _IEN[e][i]
+  
+    for j in range(0,_GL):
+     jj = _IEN[e][j]
+
+     K[ii,jj] += element1D.kx[i][j]
+     M[ii,jj] += element1D.mass[i][j]
+     G[ii,jj] += element1D.gx[i][j]
 
 
- return K, M, G
+ else:
+  print ""
+  print " Error: Element type not found"
+  print ""
+  sys.exit()
+
+
+ return K, M, G, polynomial_order
 
  
 

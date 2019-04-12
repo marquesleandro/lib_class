@@ -156,6 +156,92 @@ def Linear1D(_npoints, _neighbors_elements, _IEN, _xn, _vx, _dt, _scalar):
  return scalar  
 
 
+# 1D Semi-Lagrangian using npoints x neighbors_elements to find departure node
+def Quad1D(_npoints, _nelem, _neighbors_elements, _IEN, _xn, _vx, _dt, _scalar):
+ xd = _xn - _vx*_dt
+ 
+ scalar = np.zeros([_npoints,1], dtype = float) 
+
+ for i in range(0,_npoints - _nelem):
+  x = float(xd[i])
+
+  node = i
+  length = []
+  breaking = 0
+  while breaking == 0:
+   for e in _neighbors_elements[node]:
+    v1 = _IEN[e][0]
+    v2 = _IEN[e][1]
+    v3 = _IEN[e][2]
+
+    x1 = float(_xn[v1])
+    x2 = float(_xn[v2])
+    x3 = float(_xn[v3])
+
+    len1 = abs(x2 - x)
+    len2 = abs(x1 - x)
+    lent = abs(x1 - x2)
+
+    Li = len1/lent
+    Lj = len2/lent
+
+    alpha = [Li,Lj]
+    alpha = np.array(alpha)
+
+    if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+     Ni = ((x - x3)/(x1 - x3))*((x - x2)/(x1 - x2))
+     Nj = ((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2))
+     Nk = ((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3))
+
+     scalar1 = _scalar[v1]
+     scalar2 = _scalar[v2]
+     scalar3 = _scalar[v3]
+
+     scalar[i] = Ni*scalar1 + Nj*scalar2 + Nk*scalar3
+     breaking = 1
+     break
+
+    else:
+     x_a = x1 - x
+     x_b = x2 - x
+  
+     length1 = np.sqrt(x_a**2)
+     length2 = np.sqrt(x_b**2)
+
+     a_1 = [v1,length1]
+     a_2 = [v2,length2]
+ 
+     length.append(a_1)
+     length.append(a_2)
+   
+     breaking = 0
+
+
+   # first neighbor is element found 
+   if breaking == 1:
+     break
+ 
+ 
+   # coordinate not found
+   else:
+    length_min = min(length, key=lambda k:k[1])
+    node1 = node
+    node = length_min[0]
+
+    # outside domain
+    if node == node1 and breaking == 0:
+     scalar[i] = _scalar[node]
+     
+     breaking = 1
+     break
+
+
+ return scalar  
+
+
+
+
+
 
 # 2D Semi-Lagrangian using npoints x nelem to find departure node
 def Linear2D_v2(_npoints, _nelem, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):

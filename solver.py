@@ -40,7 +40,7 @@ class SemiImplicit_convection_diffusion1D:
   _self.c = c
 
 
- def semi_lagrangian(_self, _npoints, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+ def semi_lagrangian(_self, _npoints, _neighbors_elements, _IEN, _x, _vx, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
   
   _self.scheme_name = 'Semi Lagrangian' 
   
@@ -48,9 +48,7 @@ class SemiImplicit_convection_diffusion1D:
   neighbors_elements = _neighbors_elements
   IEN = _IEN
   x = _x
-  y = _y
   vx = _vx
-  vy = _vy
   dt = _dt
   c = _c
   M = _M
@@ -58,7 +56,7 @@ class SemiImplicit_convection_diffusion1D:
   bc_dirichlet = _bc_dirichlet
   bc_2 = _bc_2
 
-  c_d = semi_lagrangian.Linear1D(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
+  c_d = semi_lagrangian.Linear1D(npoints, neighbors_elements, IEN, x, vx, dt, c)
 
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
@@ -70,6 +68,37 @@ class SemiImplicit_convection_diffusion1D:
   c = c[0].reshape((len(c[0]),1))
  
   _self.c = c
+
+ def semi_lagrangian_quad(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _vx, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+  
+  _self.scheme_name = 'Semi Lagrangian' 
+  
+  npoints = _npoints
+  nelem = _nelem
+  neighbors_elements = _neighbors_elements
+  IEN = _IEN
+  x = _x
+  vx = _vx
+  dt = _dt
+  c = _c
+  M = _M
+  LHS = _LHS 
+  bc_dirichlet = _bc_dirichlet
+  bc_2 = _bc_2
+
+  c_d = semi_lagrangian.Quad1D(npoints, nelem, neighbors_elements, IEN, x, vx, dt, c)
+
+  A = np.copy(M)/dt
+  RHS = sps.lil_matrix.dot(A,c_d)
+ 
+  RHS = np.multiply(RHS,bc_2)
+  RHS = RHS + bc_dirichlet
+
+  c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
+  c = c[0].reshape((len(c[0]),1))
+ 
+  _self.c = c
+
 
 
 
