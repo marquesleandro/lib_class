@@ -71,7 +71,7 @@ class SemiImplicit_convection_diffusion1D:
 
  def semi_lagrangian_quad(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _vx, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
   
-  _self.scheme_name = 'Semi Lagrangian' 
+  _self.scheme_name = 'Semi Lagrangian Quadratic' 
   
   npoints = _npoints
   nelem = _nelem

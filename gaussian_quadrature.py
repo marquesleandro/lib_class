@@ -199,22 +199,25 @@ class Element1D:
     
    # Area Coordinates
    L1 = (1.0/2.0)*(1.0 - _self.GQPoints[k][0])      #L1 = (1/2)*(1 - l1)
-   L2 = (1.0/2.0)*(1.0 + _self.GQPoints[k][0])      #L3 = (1/2)*(1 + l1)
+   L2 = (1.0/2.0)*(1.0 + _self.GQPoints[k][0])      #L2 = (1/2)*(1 + l1)
 
    # Shape Functions
    # Lewis pag. 63 Eq. 3.104
+   # N3 is quadratic node
    N[k][0] = L1*(-_self.GQPoints[k][0])  #N1 = (1/2)*(1 - l1)*(-l1)
-   N[k][1] = 4.0*L1*L2                   #N2 = (1 - l1**2)
-   N[k][2] = L2*( _self.GQPoints[k][0])  #N3 = (1/2)*(1 + l1)*l1
+   N[k][1] = L2*( _self.GQPoints[k][0])  #N2 = (1/2)*(1 + l1)*l1
+   N[k][2] = 4.0*L1*L2                   #N3 = (1 - l1**2)
 
    # Shape Functions Derivatives in respect to l1
-   dNdl1[k][0] = -0.5 + _self.GQPoints[k][0]   #dN1/dl1
-   dNdl1[k][1] = -2.0*_self.GQPoints[k][0]     #dN2/dl1
-   dNdl1[k][0] =  0.5 + _self.GQPoints[k][0]   #dN3/dl1
+   #dN3/dl1 is quadratic node
+   dNdl1[k][0] = (1.0/2.0)*(-1.0 + 2.0*_self.GQPoints[k][0])   #dN1/dl1
+   dNdl1[k][1] = (1.0/2.0)*( 1.0 + 2.0*_self.GQPoints[k][0])   #dN2/dl1
+   dNdl1[k][2] = -2.0*_self.GQPoints[k][0]                     #dN3/dl1
 
 
    # Coordinate Transfomation
    # Lewis pag. 64 Eq. 3.108 for 1D
+   # IEN[e][2] is quadratic node, so N3 and dN3/dl1 is quadratic 
    for i in range(0,_self.NUMNODE):
     ii = _self.IEN[_e][i]
     

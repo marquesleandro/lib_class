@@ -189,9 +189,12 @@ def Quad1D(_npoints, _nelem, _neighbors_elements, _IEN, _xn, _vx, _dt, _scalar):
     alpha = np.array(alpha)
 
     if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+
+     # Lewis pag 48 Eq. 3.33
+     # x3 is quadratic node
      Ni = ((x - x3)/(x1 - x3))*((x - x2)/(x1 - x2))
-     Nj = ((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2))
-     Nk = ((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3))
+     Nj = ((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3))
+     Nk = ((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2))
 
      scalar1 = _scalar[v1]
      scalar2 = _scalar[v2]

@@ -30,6 +30,7 @@ def Element1D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _GAUSSPOINTS)
  
  if _polynomial_option == 1:
   polynomial_order = 'Linear Element'
+  
   for e in tqdm(range(0, _nelem)):
    element1D.linear(e)
 
@@ -43,8 +44,10 @@ def Element1D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _GAUSSPOINTS)
      M[ii,jj] += element1D.mass[i][j]
      G[ii,jj] += element1D.gx[i][j]
 
+
  elif _polynomial_option == 2:
   polynomial_order = 'Quadratic Element'
+
   for e in tqdm(range(0, _nelem)):
    element1D.quadratic(e)
 
@@ -57,6 +60,7 @@ def Element1D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _GAUSSPOINTS)
      K[ii,jj] += element1D.kx[i][j]
      M[ii,jj] += element1D.mass[i][j]
      G[ii,jj] += element1D.gx[i][j]
+
 
 
  else:
