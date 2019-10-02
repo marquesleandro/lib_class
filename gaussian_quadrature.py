@@ -265,6 +265,22 @@ class Element1D:
 
 
 
+ # http://kis.tu.kielce.pl//mo/COLORADO_FEM/colorado/IFEM.Ch32.pdf
+ # pag. 32-11
+ # Eq. 32.24
+ def quad_analytic(_self, _e):
+  v1 = _self.IEN[_e][0]
+  v2 = _self.IEN[_e][1]
+  v3 = _self.IEN[_e][2]
+  
+  dx = _self.x[v2] - _self.x[v1]
+
+  _self.kx = (1.0/(6.0*dx))*np.array([[14,2,-16],[2,14,-16],[-16,-16,32]])
+  _self.mass = (dx/90.0)*np.array([[12,-3,6],[-3,12,6],[6,6,48]])
+  # _self.gx = (1.0/2.0)*np.array([[-1,1],[-1,1]]) # verify 
+
+
+
 
 
 
