@@ -583,23 +583,20 @@ class Mini:
    _self.y[v4] = (_self.y[v1] + _self.y[v2] + _self.y[v3])/3.0
    _self.npts.append(v4)
 
-class Quad:
- def __init__(_self, _dir, _file):
+class Quad2D:
+ def __init__(_self, _dir, _file, _number_equations):
   _self.name = _dir + '/' + _file
+  _self.neq = _number_equations
   _self.gmsh = []
   _self.neumann_lines = {}
-  _self.dirichlet_lines = {}
   _self.neumann_edges = {}
+  _self.dirichlet_lines = {}
   _self.dirichlet_pts = {}
   _self.neighbors_nodes = {}
   _self.neighbors_elements = {}
   _self.far_neighbors_nodes = {}
   _self.far_neighbors_elements = {}
 
-
- def number_equations(_self, _neq):
-  _self.neq = _neq
-  
   # Converting .msh in a python list
   with open(_self.name) as mesh:
    for line in mesh:
@@ -671,8 +668,21 @@ class Quad:
   _self.jj = jj
 
 
+ def coord(_self):
+  _self.x = np.zeros([_self.npoints,1], dtype = float)
+  _self.y = np.zeros([_self.npoints,1], dtype = float)
+  _self.npts = []
+
+  for i in range(0, _self.npoints):  
+   _self.x[i] = _self.gmsh[_self.nphysical + 8 + i][1]
+   _self.y[i] = _self.gmsh[_self.nphysical + 8 + i][2]
+   _self.npts.append(i)
+
+
  def ien(_self):
   _self.IEN = np.zeros([_self.nelem,6], dtype = int)
+  _self.GL = len(_self.IEN[0,:])
+  length = [] 
   
   for e in range(0, _self.nelem):
    v1 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][5]) - 1
@@ -704,7 +714,26 @@ class Quad:
    _self.neighbors_elements[v4].append(e)  
    _self.neighbors_elements[v5].append(e)  
    _self.neighbors_elements[v6].append(e)  
- 
+
+   x_a = _self.x[v1] - _self.x[v2]
+   x_b = _self.x[v2] - _self.x[v3]
+   x_c = _self.x[v3] - _self.x[v1]
+   
+   y_a = _self.y[v1] - _self.y[v2]
+   y_b = _self.y[v2] - _self.y[v3]
+   y_c = _self.y[v3] - _self.y[v1]
+   
+   length1 = np.sqrt(x_a**2 + y_a**2)
+   length2 = np.sqrt(x_b**2 + y_b**2)
+   length3 = np.sqrt(x_c**2 + y_c**2)
+
+   length.append(length1)
+   length.append(length2)
+   length.append(length3)
+   
+  _self.length_min = min(length)
+
+
   for i in range(0, _self.npoints):
    for j in _self.neighbors_nodes[i]:
     _self.far_neighbors_nodes[i].extend(_self.neighbors_nodes[j]) 
@@ -715,15 +744,4 @@ class Quad:
    
    _self.far_neighbors_elements[i] = list(set(_self.far_neighbors_elements[i])\
                                         - set(_self.neighbors_elements[i]))
-
- def coord(_self):
-  _self.x = np.zeros([_self.npoints,1], dtype = float)
-  _self.y = np.zeros([_self.npoints,1], dtype = float)
-  _self.npts = []
-
-  for i in range(0, _self.npoints):  
-   _self.x[i] = _self.gmsh[_self.nphysical + 8 + i][1]
-   _self.y[i] = _self.gmsh[_self.nphysical + 8 + i][2]
-   _self.npts.append(i)
-
 

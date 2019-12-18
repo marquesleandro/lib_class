@@ -281,6 +281,275 @@ class Element1D:
 
 
 
+class Element2D:
+ def __init__(_self, _x, _y, _IEN, _GAUSSPOINTS):
+  _self.x = _x
+  _self.y = _y
+  _self.IEN = _IEN
+
+
+  if _GAUSSPOINTS == 4:
+   _self.NUMGP = 4  #Number of Gauss Points
+
+
+   #                                 l1                 l2
+   _self.GQPoints = np.array([[0.33333333333333, 0.33333333333333], 
+                              [0.60000000000000, 0.20000000000000], 
+                              [0.20000000000000, 0.60000000000000], 
+                              [0.20000000000000, 0.20000000000000]])
+
+
+   #                                    w
+   _self.GQWeights = np.array([[-0.56250000000000], 
+                               [0.520833333333333], 
+                               [0.520833333333333], 
+                               [0.520833333333333]])
+
+
+  else:
+   print ""
+   print " Error: Gauss Points not found"
+   print ""
+   sys.exit()
+
+
+ def linear(_self,_e):
+  _self.NUMNODE = 3  #Linear Triangular Element - 3 Nodes
+  
+  N = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+  dNdl1 = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  dNdl2 = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  
+  dxdl1 = np.zeros([_self.NUMGP,1], dtype = float)
+  dxdl2 = np.zeros([_self.NUMGP,1], dtype = float)
+  dydl1 = np.zeros([_self.NUMGP,1], dtype = float)
+  dydl2 = np.zeros([_self.NUMGP,1], dtype = float)
+
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGP,1], dtype = float)
+  
+  dNdx = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  dNdy = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+
+  # A loop is required for each pair of coordinates (l1,l2)
+  for k in range(0,_self.NUMGP):
+    
+   # Area Coordinates
+   # Lewis pag. 67 Eq. 3.129
+   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L1 = 1 - l1 - l2
+   L2 = _self.GQPoints[k][0]                                #L2 = l1
+   L3 = _self.GQPoints[k][1]                                #L3 = l2
+
+   # Shape Functions
+   # Lewis pag. 67 Eq. 3.129
+   N[k][0] = L1  #N1 = L1
+   N[k][1] = L2  #N2 = L2
+   N[k][2] = L3  #N3 = L3
+
+   # Shape Functions Derivatives in respect to l1
+   dNdl1[k][0] = -1.0   #dN1/dl1
+   dNdl1[k][1] =  1.0   #dN2/dl1
+   dNdl1[k][2] =  0.0   #dN3/dl1
+
+   # Shape Functions Derivatives in respect to l2
+   dNdl2[k][0] = -1.0   #dN1/dl2
+   dNdl2[k][1] =  0.0   #dN2/dl2
+   dNdl2[k][2] =  1.0   #dN3/dl2
+
+   # Coordinate Transfomation
+   # Lewis pag. 64 Eq. 3.108 for 1D
+   # Lewis pag. 66 Eq. 3.121 for 2D
+   for i in range(0,_self.NUMNODE):
+    ii = _self.IEN[_e][i]
+    
+    dxdl1[k] += _self.x[ii]*dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
+    dydl1[k] += _self.y[ii]*dNdl1[k][i]   # dy/dl1 = y1*dN1/dl1 + y2*dN2/dl1 + y3*dN3/dl1 ...
+    dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
+    dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
+
+   # Jacobian Matrix
+   # Lewis pag. 66 Eq. 3.121
+   J[0][0] = dxdl1[k]
+   J[0][1] = dydl1[k]
+   J[1][0] = dxdl2[k]
+   J[1][1] = dydl2[k]
+
+   jacobian[k] = np.linalg.det(J)
+
+#   jacobian_inv = np.linalg.inv(J)
+
+   # Shape Functions Derivatives in respect to x and y
+   # Lewis pag. 65 Eq. 3.115
+#   for i in range(0,_self.NUMNODE):
+#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
+#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
+
+
+   # Shape Functions Derivatives in respect to x and y
+   # Lewis pag. 65 Eq. 3.116
+   for i in range(0,_self.NUMNODE):
+    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
+    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
+
+
+
+  _self.mass = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  
+
+  # Elementary Matrices
+  # P.S: It is divided by 2 due to relation 
+  # of parallelogram and triangle areas --> DxDy = (jacobian*Dl1*Dl2)/2
+  for k in range(0,_self.NUMGP): 
+   for i in range(0,_self.NUMNODE):
+    for j in range(0,_self.NUMNODE):
+    
+     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.kxx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kxy[i][j] += dNdx[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+  
+
+ def quadratic(_self,_e):
+  _self.NUMNODE = 6  #Quadratic Triangular Element - 6 Nodes
+  
+  N = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+  dNdl1 = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  dNdl2 = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  
+  dxdl1 = np.zeros([_self.NUMGP,1], dtype = float)
+  dxdl2 = np.zeros([_self.NUMGP,1], dtype = float)
+  dydl1 = np.zeros([_self.NUMGP,1], dtype = float)
+  dydl2 = np.zeros([_self.NUMGP,1], dtype = float)
+
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGP,1], dtype = float)
+  
+  dNdx = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+  dNdy = np.zeros([_self.NUMGP,_self.NUMNODE], dtype = float)
+
+  # A loop is required for each pair of coordinates (l1,l2)
+  for k in range(0,_self.NUMGP):
+    
+   # Area Coordinates
+   L1 = _self.GQPoints[k][0]                                #L1 = l1
+   L2 = _self.GQPoints[k][1]                                #L2 = l2
+   L3 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L3 = 1 - l1 - l2
+
+   # Shape Functions
+   # Lewis pag. 67 Eq. 3.130
+   # N3 is quadratic node
+   N[k][0] = L1*(2.0*L1 - 1.0)  #N1 = L1*(2*L1-1)
+   N[k][1] = L2*(2.0*L2 - 1.0)  #N2 = L2*(2*L2-1)
+   N[k][2] = L3*(2.0*L3 - 1.0)  #N3 = L3*(2*L3-1)
+   N[k][3] = 4.0*L1*L2          #N4 = 4*L1*L2
+   N[k][4] = 4.0*L2*L3          #N5 = 4*L2*L3
+   N[k][5] = 4.0*L3*L1          #N6 = 4*L3*L1
+
+   # Shape Functions Derivatives in respect to l1
+   dNdl1[k][0] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN1/dl1
+   dNdl1[k][1] =  0.0                                                         #dN2/dl1
+   dNdl1[k][2] = -3.0 - 4.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN3/dl1
+   dNdl1[k][3] =  4.0*_self.GQPoints[k][1]                                    #dN4/dl1
+   dNdl1[k][4] = -4.0*_self.GQPoints[k][1]                                    #dN5/dl1
+   dNdl1[k][5] =  4.0 - 4.0*_self.GQPoints[k][1] - 8.0*_self.GQPoints[k][0]   #dN6/dl1
+
+
+   # Shape Functions Derivatives in respect to l2
+   dNdl2[k][0] =  0.0                                                         #dN1/dl2
+   dNdl2[k][1] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN2/dl2
+   dNdl2[k][2] = -3.0 - 4.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN3/dl2
+   dNdl2[k][3] =  4.0*_self.GQPoints[k][0]                                    #dN4/dl2
+   dNdl2[k][4] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN5/dl2
+   dNdl2[k][5] = -4.0*_self.GQPoints[k][0]                                    #dN6/dl2
+
+   # Coordinate Transfomation
+   # Lewis pag. 64 Eq. 3.108 for 1D
+   # Lewis pag. 66 Eq. 3.121 for 2D
+   for i in range(0,_self.NUMNODE):
+    ii = _self.IEN[_e][i]
+    
+    dxdl1[k] += _self.x[ii]*dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
+    dydl1[k] += _self.y[ii]*dNdl1[k][i]   # dy/dl1 = y1*dN1/dl1 + y2*dN2/dl1 + y3*dN3/dl1 ...
+    dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
+    dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
+
+   # Jacobian Matrix
+   # Lewis pag. 66 Eq. 3.121
+   J[0][0] = dxdl1[k]
+   J[0][1] = dydl1[k]
+   J[1][0] = dxdl2[k]
+   J[1][1] = dydl2[k]
+
+   jacobian[k] = np.linalg.det(J)
+
+#   jacobian_inv = np.linalg.inv(J)
+
+   # Shape Functions Derivatives in respect to x and y
+   # Lewis pag. 65 Eq. 3.115
+#   for i in range(0,_self.NUMNODE):
+#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
+#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
+
+
+   # Shape Functions Derivatives in respect to x and y
+   # Lewis pag. 65 Eq. 3.116
+   for i in range(0,_self.NUMNODE):
+    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
+    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
+
+
+
+  _self.mass = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kxy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.kyy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.gy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dx = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  _self.dy = np.zeros([_self.NUMNODE,_self.NUMNODE], dtype = float)
+  
+
+  # Elementary Matrices
+  # P.S: It is divided by 2 due to relation 
+  # of parallelogram and triangle areas --> DxDy = (jacobian*Dl1*Dl2)/2
+  for k in range(0,_self.NUMGP): 
+   for i in range(0,_self.NUMNODE):
+    for j in range(0,_self.NUMNODE):
+    
+     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.kxx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kxy[i][j] += dNdx[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+    
+     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+  
+
 
 
 

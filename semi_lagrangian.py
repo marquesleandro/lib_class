@@ -621,3 +621,138 @@ def Linear2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scal
 
  return scalar
 
+
+# 2D Semi-Lagrangian using npoints x nelem to find departure node
+def Quad2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):
+ xd = _xn - _vx*_dt
+ yd = _yn - _vy*_dt
+ 
+ scalar = np.zeros([_npoints,1], dtype = float) 
+ 
+ for i in range(0,_npoints):
+  x = float(xd[i])
+  y = float(yd[i])
+
+  node = i
+  length = []
+  breaking = 0
+  while breaking == 0:
+   for e in _neighbors_elements[node]:
+    v1 = _IEN[e][0]
+    v2 = _IEN[e][1]
+    v3 = _IEN[e][2]
+    v4 = _IEN[e][3]
+    v5 = _IEN[e][4]
+    v6 = _IEN[e][5]
+
+    x1 = float(_xn[v1])
+    x2 = float(_xn[v2])
+    x3 = float(_xn[v3])
+    x4 = float(_xn[v4])
+    x5 = float(_xn[v5])
+    x6 = float(_xn[v6])
+
+    y1 = float(_yn[v1])
+    y2 = float(_yn[v2])
+    y3 = float(_yn[v3])
+    y4 = float(_yn[v4])
+    y5 = float(_yn[v5])
+    y6 = float(_yn[v6])
+  
+    A = np.array([[x1,x2,x3],
+                  [y1,y2,y3],
+                  [1.0,1.0,1.0]])
+
+    b = np.array([x,y,1.0])
+ 
+    alpha = np.linalg.solve(A,b)
+
+ 
+    if np.all(alpha >= 0.0) and np.all(alpha <= 1.0):
+ 
+     A1 = 0.5*np.linalg.det(np.array([[1, x, y],
+                                      [1, x2, y2],
+                                      [1, x3, y3]]))
+ 
+     A2 = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                      [1, x, y],
+                                      [1, x3, y3]]))
+ 
+     A3 = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                      [1, x2, y2],
+                                      [1, x, y]]))
+ 
+     At = 0.5*np.linalg.det(np.array([[1, x1, y1],
+                                      [1, x2, y2],
+                                      [1, x3, y3]]))
+   
+     L1 = A1/At
+     L2 = A2/At
+     L3 = A3/At
+     
+     N1 = L1*(2.0*L1 - 1.0)
+     N2 = L2*(2.0*L2 - 1.0)
+     N3 = L3*(2.0*L3 - 1.0)
+     N4 = 4.0*L1*L2
+     N5 = 4.0*L2*L3
+     N6 = 4.0*L3*L1
+
+     scalar1 = _scalar[v1]
+     scalar2 = _scalar[v2]
+     scalar3 = _scalar[v3]
+     scalar4 = _scalar[v4]
+     scalar5 = _scalar[v5]
+     scalar6 = _scalar[v6]
+
+     scalar[i] = N1*scalar1 + N2*scalar2 + N3*scalar3 + N4*scalar4 + N5*scalar5 + N6*scalar6
+
+     breaking = 1
+     break
+
+
+    else:
+     x_a = x1 - x
+     x_b = x2 - x
+     x_c = x3 - x
+   
+     y_a = y1 - y
+     y_b = y2 - y
+     y_c = y3 - y
+  
+     length1 = np.sqrt(x_a**2 + y_a**2)
+     length2 = np.sqrt(x_b**2 + y_b**2)
+     length3 = np.sqrt(x_c**2 + y_c**2)
+
+     a_1 = [v1,length1]
+     a_2 = [v2,length2]
+     a_3 = [v3,length3]
+ 
+     length.append(a_1)
+     length.append(a_2)
+     length.append(a_3)
+   
+     breaking = 0
+
+
+   # first neighbor is element found 
+   if breaking == 1:
+     break
+ 
+ 
+   # coordinate not found
+   else:
+    length_min = min(length, key=lambda k:k[1])
+    node1 = node
+    node = length_min[0]
+
+    # outside domain
+    if node == node1 and breaking == 0:
+     scalar[i] = _scalar[node]
+     
+     breaking = 1
+     break
+
+
+ return scalar
+
+

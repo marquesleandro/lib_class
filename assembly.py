@@ -154,6 +154,77 @@ def Linear2D(_GL, _npoints, _nelem, _IEN, _x, _y, _GAUSSPOINTS):
  return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy, linear.polynomial_order, linear.gausspoints
 
 
+def Element2D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _y, _GAUSSPOINTS):
+
+ Kxx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kxy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kyx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Kyy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ K = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ M = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ MLump = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Gx = sps.lil_matrix((_npoints,_npoints), dtype = float)
+ Gy = sps.lil_matrix((_npoints,_npoints), dtype = float)
+
+
+ element2D = gaussian_quadrature.Element2D(_x, _y, _IEN, _GAUSSPOINTS)
+
+ if _polynomial_option == 1:
+  polynomial_order = 'Linear Element'
+  
+  for e in tqdm(range(0, _nelem)):
+   element2D.linear(e)
+
+   for i in range(0,_GL): 
+    ii = _IEN[e][i]
+  
+    for j in range(0,_GL):
+     jj = _IEN[e][j]
+
+     Kxx[ii,jj] += element2D.kxx[i][j]
+     Kxy[ii,jj] += element2D.kxy[i][j]
+     Kyx[ii,jj] += element2D.kyx[i][j]
+     Kyy[ii,jj] += element2D.kyy[i][j]
+     K[ii,jj] += element2D.kxx[i][j] + element2D.kyy[i][j]
+   
+     M[ii,jj] += element2D.mass[i][j]
+     MLump[ii,ii] += element2D.mass[i][j]
+
+     Gx[ii,jj] += element2D.gx[i][j]
+     Gy[ii,jj] += element2D.gy[i][j]
+
+ elif _polynomial_option == 2:
+  polynomial_order = 'Quadratic Element'
+
+  for e in tqdm(range(0, _nelem)):
+   element2D.quadratic(e)
+
+   for i in range(0,_GL): 
+    ii = _IEN[e][i]
+  
+    for j in range(0,_GL):
+     jj = _IEN[e][j]
+
+     Kxx[ii,jj] += element2D.kxx[i][j]
+     Kxy[ii,jj] += element2D.kxy[i][j]
+     Kyx[ii,jj] += element2D.kyx[i][j]
+     Kyy[ii,jj] += element2D.kyy[i][j]
+     K[ii,jj] += element2D.kxx[i][j] + element2D.kyy[i][j]
+   
+     M[ii,jj] += element2D.mass[i][j]
+     MLump[ii,ii] += element2D.mass[i][j]
+
+     Gx[ii,jj] += element2D.gx[i][j]
+     Gy[ii,jj] += element2D.gy[i][j]
+
+ else:
+  print ""
+  print " Error: Element type not found"
+  print ""
+  sys.exit()
+
+
+ return Kxx, Kxy, Kyx, Kyy, K, M, MLump, Gx, Gy, polynomial_order
 
 
 def Mini_NS2D(_GLV, _GLP, _NV, _NP, _nelem, _IEN, _x, _y):
