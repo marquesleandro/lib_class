@@ -256,12 +256,15 @@ class Quad1D:
   
    _self.neighbors_nodes[v1].extend(_self.IEN[e])  
    _self.neighbors_nodes[v2].extend(_self.IEN[e])  
+   _self.neighbors_nodes[v3].extend(_self.IEN[e])  
    
    _self.neighbors_nodes[v1] = list(set(_self.neighbors_nodes[v1]))
    _self.neighbors_nodes[v2] = list(set(_self.neighbors_nodes[v2]))
+   _self.neighbors_nodes[v3] = list(set(_self.neighbors_nodes[v2]))
 
    _self.neighbors_elements[v1].append(e)  
    _self.neighbors_elements[v2].append(e)  
+   _self.neighbors_elements[v3].append(e)  
 
    x_a = _self.x[v1] - _self.x[v2]
    length1 = np.sqrt(x_a**2)
