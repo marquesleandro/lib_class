@@ -56,6 +56,7 @@ class SemiImplicit_convection_diffusion1D:
   bc_dirichlet = _bc_dirichlet
   bc_2 = _bc_2
 
+  #c_d = semi_lagrangian.Linear1D_v2(npoints, nelem, IEN, x, vx, dt, c)
   c_d = semi_lagrangian.Linear1D(npoints, neighbors_elements, IEN, x, vx, dt, c)
 
   A = np.copy(M)/dt
@@ -86,9 +87,8 @@ class SemiImplicit_convection_diffusion1D:
   bc_dirichlet = _bc_dirichlet
   bc_2 = _bc_2
 
-  #c_d = semi_lagrangian.Quad1D(npoints, nelem, neighbors_elements, IEN, x, vx, dt, c)
   #c_d = semi_lagrangian.Quad1D_v2(npoints, nelem, IEN, x, vx, dt, c)
-  c_d = semi_lagrangian.Quad1D_v3(npoints, neighbors_elements, IEN, x, vx, dt, c)
+  c_d = semi_lagrangian.Quad1D(npoints, neighbors_elements, IEN, x, vx, dt, c)
 
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
@@ -166,6 +166,7 @@ class SemiImplicit_convection_diffusion2D:
   bc_dirichlet = _bc_dirichlet
   bc_2 = _bc_2
 
+  #c_d = semi_lagrangian.Linear2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
   c_d = semi_lagrangian.Linear2D(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
 
   A = np.copy(M)/dt
@@ -198,7 +199,9 @@ class SemiImplicit_convection_diffusion2D:
   bc_dirichlet = _bc_dirichlet
   bc_2 = _bc_2
 
-  c_d = semi_lagrangian.Quad2D(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
+  #c_d = semi_lagrangian.Quad2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
+  #c_d = semi_lagrangian.Quad2D(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
+  c_d = semi_lagrangian.Quad2D_v3(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
 
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
