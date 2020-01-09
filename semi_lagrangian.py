@@ -548,8 +548,8 @@ def Linear2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scal
 
 # 2D Semi-Lagrangian using npoints x neighbors_elements to find departure node
 # neighbors distance
-# No ok 
-def Linear2D_v3(_npoints, _far_neighbors_nodes, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):
+# semilagrangian test OK 
+def Linear2D_v3(_npoints, _neighbors_nodes, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar):
  xd = _xn - _vx*_dt
  yd = _yn - _vy*_dt
  
@@ -565,8 +565,9 @@ def Linear2D_v3(_npoints, _far_neighbors_nodes, _neighbors_elements, _IEN, _xn, 
   element = []
   breaking = 0
 
-  while breaking == 0:
-   for j in _far_neighbors_nodes[node]:
+  #while breaking == 0: #until find
+  for k in range(0,10): #search limited
+   for j in _neighbors_nodes[node]:
     xx = float(_xn[j])
     yy = float(_yn[j])
  
@@ -612,10 +613,10 @@ def Linear2D_v3(_npoints, _far_neighbors_nodes, _neighbors_elements, _IEN, _xn, 
     barycentric = np.array(barycentric)
     idx = (barycentric >= 0.0) & (barycentric <= 1.0)
     aa = np.where((idx == True).all(axis=1))
-    aa = aa[0]
 
     # inside element
     try:
+     aa = int(aa[0])
      e = element[aa]
 
      v1 = _IEN[e][0]
@@ -673,7 +674,9 @@ def Linear2D_v3(_npoints, _far_neighbors_nodes, _neighbors_elements, _IEN, _xn, 
 
    # node far yet
    else:
-    breaking = 0
+    continue
+
+   break
 
 
  return scalar
