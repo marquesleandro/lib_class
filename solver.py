@@ -207,7 +207,7 @@ class SemiImplicit_convection_diffusion2D:
 
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
- 
+
   RHS = np.multiply(RHS,bc_2)
   RHS = RHS + bc_dirichlet
 

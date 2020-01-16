@@ -345,9 +345,9 @@ class Element2D:
 
    #                                 l1                 l2
    _self.GQPoints = np.array([[0.33333333333333, 0.33333333333333], 
-                              [0.60000000000000, 0.20000000000000], 
+                              [0.20000000000000, 0.20000000000000], 
                               [0.20000000000000, 0.60000000000000], 
-                              [0.20000000000000, 0.20000000000000]])
+                              [0.60000000000000, 0.20000000000000]])
 
 
    #                                    w
@@ -359,8 +359,8 @@ class Element2D:
 
 
   
-  elif _GAUSSPOINTS == 5:
-   _self.NUMGP = 5  #Number of Gauss Points
+  elif _GAUSSPOINTS == 6:
+   _self.NUMGP = 6  #Number of Gauss Points
 
 
    #                                 l1                 l2
@@ -381,8 +381,8 @@ class Element2D:
                                [0.10995174365532]])
 
 
-  elif _GAUSSPOINTS == 7:
-   _self.NUMGP = 7  #Number of Gauss Points
+  elif _GAUSSPOINTS == 12:
+   _self.NUMGP = 12  #Number of Gauss Points
 
 
    #                                 l1                 l2
@@ -564,7 +564,6 @@ class Element2D:
 
    # Shape Functions
    # Lewis pag. 67 Eq. 3.130
-   # N3 is quadratic node
    N[k][0] = L1*(2.0*L1 - 1.0)  #N1 = L1*(2*L1-1)
    N[k][1] = L2*(2.0*L2 - 1.0)  #N2 = L2*(2*L2-1)
    N[k][2] = L3*(2.0*L3 - 1.0)  #N3 = L3*(2*L3-1)
@@ -575,16 +574,16 @@ class Element2D:
    # Shape Functions Derivatives in respect to l1
    dNdl1[k][0] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN1/dl1
    dNdl1[k][1] =  0.0                                                         #dN2/dl1
-   dNdl1[k][2] = -3.0 - 4.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN3/dl1
+   dNdl1[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl1
    dNdl1[k][3] =  4.0*_self.GQPoints[k][1]                                    #dN4/dl1
    dNdl1[k][4] = -4.0*_self.GQPoints[k][1]                                    #dN5/dl1
-   dNdl1[k][5] =  4.0 - 4.0*_self.GQPoints[k][1] - 8.0*_self.GQPoints[k][0]   #dN6/dl1
+   dNdl1[k][5] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN6/dl1
 
 
    # Shape Functions Derivatives in respect to l2
    dNdl2[k][0] =  0.0                                                         #dN1/dl2
    dNdl2[k][1] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN2/dl2
-   dNdl2[k][2] = -3.0 - 4.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN3/dl2
+   dNdl2[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl2
    dNdl2[k][3] =  4.0*_self.GQPoints[k][0]                                    #dN4/dl2
    dNdl2[k][4] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN5/dl2
    dNdl2[k][5] = -4.0*_self.GQPoints[k][0]                                    #dN6/dl2

@@ -682,6 +682,8 @@ class Quad2D:
  def ien(_self):
   _self.IEN = np.zeros([_self.nelem,6], dtype = int)
   _self.GL = len(_self.IEN[0,:])
+  _self.nodes_linear = [] 
+  _self.nodes_quad = [] 
   length = [] 
   
   for e in range(0, _self.nelem):
@@ -714,6 +716,14 @@ class Quad2D:
    _self.neighbors_elements[v4].append(e)  
    _self.neighbors_elements[v5].append(e)  
    _self.neighbors_elements[v6].append(e)  
+   
+   _self.nodes_linear.append(v1)  
+   _self.nodes_linear.append(v2)  
+   _self.nodes_linear.append(v3)  
+
+   _self.nodes_quad.append(v4)  
+   _self.nodes_quad.append(v5)  
+   _self.nodes_quad.append(v6)  
 
    x_a = _self.x[v1] - _self.x[v2]
    x_b = _self.x[v2] - _self.x[v3]
@@ -732,6 +742,9 @@ class Quad2D:
    length.append(length3)
    
   _self.length_min = min(length)
+
+  _self.nodes_linear = list(set(_self.nodes_linear))  
+  _self.nodes_quad = list(set(_self.nodes_quad))
 
 
   for i in range(0, _self.npoints):
