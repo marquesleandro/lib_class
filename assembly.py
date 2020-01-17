@@ -116,6 +116,31 @@ def Element2D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _y, _GAUSSPOI
      Gy[ii,jj] += element2D.gy[i][j]
 
  elif _polynomial_option == 2:
+  polynomial_order = 'Mini Element'
+
+  for e in tqdm(range(0, _nelem)):
+   element2D.mini(e)
+
+   for i in range(0,_GL): 
+    ii = _IEN[e][i]
+  
+    for j in range(0,_GL):
+     jj = _IEN[e][j]
+
+     Kxx[ii,jj] += element2D.kxx[i][j]
+     Kxy[ii,jj] += element2D.kxy[i][j]
+     Kyx[ii,jj] += element2D.kyx[i][j]
+     Kyy[ii,jj] += element2D.kyy[i][j]
+     K[ii,jj] += element2D.kxx[i][j] + element2D.kyy[i][j]
+   
+     M[ii,jj] += element2D.mass[i][j]
+     MLump[ii,ii] += element2D.mass[i][j]
+
+     Gx[ii,jj] += element2D.gx[i][j]
+     Gy[ii,jj] += element2D.gy[i][j]
+
+
+ elif _polynomial_option == 3:
   polynomial_order = 'Quadratic Element'
 
   for e in tqdm(range(0, _nelem)):
@@ -139,7 +164,7 @@ def Element2D(_polynomial_option, _GL, _npoints, _nelem, _IEN, _x, _y, _GAUSSPOI
      Gx[ii,jj] += element2D.gx[i][j]
      Gy[ii,jj] += element2D.gy[i][j]
 
- elif _polynomial_option == 3:
+ elif _polynomial_option == 4:
   polynomial_order = 'Cubic Element'
 
   for e in tqdm(range(0, _nelem)):

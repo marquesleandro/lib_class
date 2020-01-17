@@ -437,7 +437,8 @@ class Linear2D:
                                         - set(_self.neighbors_elements[i]))
 
 
-class Mini:
+
+class Mini2D:
  def __init__(_self, _dir, _file, _number_equations):
   _self.name = _dir + '/' + _file
   _self.neq = _number_equations
@@ -511,9 +512,10 @@ class Mini:
 
   _self.nelem = int(_self.gmsh[jj + 10][0]) - ii + 1
   _self.NP = _self.npoints
-  _self.NV = _self.npoints + _self.nelem
+  _self.npoints = _self.NP + _self.nelem
 
-  for i in range(0, _self.NP):
+
+  for i in range(0, _self.npoints):
    _self.neighbors_nodes[i] = []
    _self.neighbors_elements[i] = []
    _self.far_neighbors_nodes[i] = []
@@ -523,12 +525,23 @@ class Mini:
   _self.ii = ii
   _self.jj = jj
 
-    
+
+ def coord(_self):
+  _self.x = np.zeros([_self.npoints,1], dtype = float)
+  _self.y = np.zeros([_self.npoints,1], dtype = float)
+  _self.npts = []
+
+  for i in range(0, _self.NP):  
+   _self.x[i] = _self.gmsh[_self.nphysical + 8 + i][1]
+   _self.y[i] = _self.gmsh[_self.nphysical + 8 + i][2]
+   _self.npts.append(i)
+
+
  def ien(_self):
   _self.IEN = np.zeros([_self.nelem,4], dtype = int)
-  _self.GLV = len(_self.IEN[0,:])
-  _self.GLP = len(_self.IEN[0,:]) - 1
-  
+  _self.GL = len(_self.IEN[0,:])
+  length = []
+
   for e in range(0, _self.nelem):
    v1 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][5]) - 1
    v2 = int(_self.gmsh[(_self.jj + 10 + _self.ii + e)][6]) - 1
@@ -536,7 +549,11 @@ class Mini:
    v4 = _self.NP + e
   
    _self.IEN[e] = [v1,v2,v3,v4]
- 
+
+   _self.x[v4] = (_self.x[v1] + _self.x[v2] + _self.x[v3])/3.0
+   _self.y[v4] = (_self.y[v1] + _self.y[v2] + _self.y[v3])/3.0
+   _self.npts.append(v4)
+
    _self.neighbors_nodes[v1].extend(_self.IEN[e])  
    _self.neighbors_nodes[v2].extend(_self.IEN[e])  
    _self.neighbors_nodes[v3].extend(_self.IEN[e])  
@@ -551,8 +568,26 @@ class Mini:
    _self.neighbors_elements[v2].append(e)  
    _self.neighbors_elements[v3].append(e)  
    _self.neighbors_elements[v4].append(e)  
- 
-  for i in range(0, _self.NP):
+
+   x_a = _self.x[v1] - _self.x[v2]
+   x_b = _self.x[v2] - _self.x[v3]
+   x_c = _self.x[v3] - _self.x[v1]
+   
+   y_a = _self.y[v1] - _self.y[v2]
+   y_b = _self.y[v2] - _self.y[v3]
+   y_c = _self.y[v3] - _self.y[v1]
+   
+   length1 = np.sqrt(x_a**2 + y_a**2)
+   length2 = np.sqrt(x_b**2 + y_b**2)
+   length3 = np.sqrt(x_c**2 + y_c**2)
+
+   length.append(length1)
+   length.append(length2)
+   length.append(length3)
+   
+  _self.length_min = min(length)
+
+  for i in range(0, _self.npoints):
    for j in _self.neighbors_nodes[i]:
     _self.far_neighbors_nodes[i].extend(_self.neighbors_nodes[j]) 
     _self.far_neighbors_elements[i].extend(_self.neighbors_elements[j]) 
@@ -562,26 +597,10 @@ class Mini:
    
    _self.far_neighbors_elements[i] = list(set(_self.far_neighbors_elements[i])\
                                         - set(_self.neighbors_elements[i]))
- 
- def coord(_self):
-  _self.x = np.zeros([_self.NV,1], dtype = float)
-  _self.y = np.zeros([_self.NV,1], dtype = float)
-  _self.npts = []
 
-  for i in range(0, _self.NP):  
-   _self.x[i] = _self.gmsh[_self.nphysical + 8 + i][1]
-   _self.y[i] = _self.gmsh[_self.nphysical + 8 + i][2]
-   _self.npts.append(i)
 
-  for e in range(0, _self.nelem):  
-   v1 = _self.IEN[e][0]
-   v2 = _self.IEN[e][1]
-   v3 = _self.IEN[e][2]
-   v4 = _self.IEN[e][3]
 
-   _self.x[v4] = (_self.x[v1] + _self.x[v2] + _self.x[v3])/3.0
-   _self.y[v4] = (_self.y[v1] + _self.y[v2] + _self.y[v3])/3.0
-   _self.npts.append(v4)
+
 
 class Quad2D:
  def __init__(_self, _dir, _file, _number_equations):
