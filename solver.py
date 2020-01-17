@@ -217,4 +217,39 @@ class SemiImplicit_convection_diffusion2D:
   _self.c = c
 
 
+ def semi_lagrangian_cubic(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+  
+  _self.scheme_name = 'Semi Lagrangian Cubic' 
+  
+  npoints = _npoints
+  nelem = _nelem
+  neighbors_elements = _neighbors_elements
+  IEN = _IEN
+  x = _x
+  y = _y
+  vx = _vx
+  vy = _vy
+  dt = _dt
+  c = _c
+  M = _M
+  LHS = _LHS 
+  bc_dirichlet = _bc_dirichlet
+  bc_2 = _bc_2
+
+  #c_d = semi_lagrangian.Cubic2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
+  c_d = semi_lagrangian.Cubic2D(npoints, neighbors_elements, IEN, x, y, vx, vy, dt, c)
+
+  A = np.copy(M)/dt
+  RHS = sps.lil_matrix.dot(A,c_d)
+
+  RHS = np.multiply(RHS,bc_2)
+  RHS = RHS + bc_dirichlet
+
+  c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
+  c = c[0].reshape((len(c[0]),1))
+ 
+  _self.c = c
+
+
+
 
