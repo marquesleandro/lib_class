@@ -7,7 +7,7 @@ import semi_lagrangian
 
 
 # Diffusion implicit and convection explicit for 1D
-class SemiImplicit_convection_diffusion1D:
+class SemiImplicit_concentration_equation1D:
  def __init__(_self, _scheme):
   _self.scheme = _scheme
 
@@ -105,18 +105,20 @@ class SemiImplicit_convection_diffusion1D:
 
 
 # Diffusion implicit and convection explicit for 2D
-class SemiImplicit_convection_diffusion2D:
+class SemiImplicit_concentration_equation2D:
  def __init__(_self, _scheme):
   _self.scheme = _scheme
 
- def taylor_galerkin(_self, _c, _vx, _vy, _dt, _M, _Kxx, _Kyx, _Kxy, _Kyy, _Gx, _Gy, _LHS, _bc_dirichlet, _bc_2):
+ def taylor_galerkin(_self, _c, _vx, _vy, _dt, _Re, _Sc, _M, _Kxx, _Kyx, _Kxy, _Kyy, _Gx, _Gy, _LHS, _bc_dirichlet, _bc_neumann, _bc_2):
 
   _self.scheme_name = 'Taylor Galerkin' 
 
   c = _c
-  vx = _vx
-  vy = _vy
+  vx =  _vx
+  vy =  _vy
   dt = _dt
+  Re = _Re
+  Sc = _Sc
   
   M = _M
   Kxx = _Kxx
@@ -128,6 +130,7 @@ class SemiImplicit_convection_diffusion2D:
   
   LHS = _LHS
   bc_dirichlet = _bc_dirichlet
+  bc_neumann = _bc_neumann
   bc_2 = _bc_2
 
   A = np.copy(M)/dt
@@ -137,7 +140,8 @@ class SemiImplicit_convection_diffusion2D:
                                                          + np.multiply(vy,sps.lil_matrix.dot(Kyx,c))))\
                                 - (dt/2.0)*np.multiply(vy,(np.multiply(vx,sps.lil_matrix.dot(Kxy,c))\
                                                          + np.multiply(vy,sps.lil_matrix.dot(Kyy,c))))
-  
+
+  RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
   RHS = RHS + bc_dirichlet
   
@@ -148,7 +152,7 @@ class SemiImplicit_convection_diffusion2D:
 
 
 
- def semi_lagrangian_linear(_self, _npoints, _neighbors_nodes, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+ def semi_lagrangian_linear(_self, _npoints, _neighbors_nodes, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _Re, _Sc, _c, _M, _LHS, _bc_dirichlet, _bc_neumann, _bc_2):
   
   _self.scheme_name = 'Semi Lagrangian' 
   
@@ -158,13 +162,18 @@ class SemiImplicit_convection_diffusion2D:
   IEN = _IEN
   x = _x
   y = _y
+
   vx = _vx
   vy = _vy
   dt = _dt
+  Re = _Re
+  Sc = _Sc
   c = _c
+
   M = _M
   LHS = _LHS 
   bc_dirichlet = _bc_dirichlet
+  bc_neumann = _bc_neumann
   bc_2 = _bc_2
 
   #c_d = semi_lagrangian.Linear2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
@@ -174,6 +183,7 @@ class SemiImplicit_convection_diffusion2D:
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
  
+  RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
   RHS = RHS + bc_dirichlet
 
@@ -182,7 +192,7 @@ class SemiImplicit_convection_diffusion2D:
  
   _self.c = c
 
- def semi_lagrangian_quad(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+ def semi_lagrangian_quad(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _Re, _Sc, _c, _M, _LHS, _bc_dirichlet, _bc_neumann, _bc_2):
   
   _self.scheme_name = 'Semi Lagrangian Quadratic' 
   
@@ -192,13 +202,18 @@ class SemiImplicit_convection_diffusion2D:
   IEN = _IEN
   x = _x
   y = _y
+
   vx = _vx
   vy = _vy
   dt = _dt
   c = _c
+  Re = _Re
+  Sc = _Sc
+ 
   M = _M
   LHS = _LHS 
   bc_dirichlet = _bc_dirichlet
+  bc_neumann = _bc_neumann
   bc_2 = _bc_2
 
   #c_d = semi_lagrangian.Quad2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
@@ -208,6 +223,7 @@ class SemiImplicit_convection_diffusion2D:
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
 
+  RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
   RHS = RHS + bc_dirichlet
 
@@ -217,7 +233,7 @@ class SemiImplicit_convection_diffusion2D:
   _self.c = c
 
 
- def semi_lagrangian_cubic(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _c, _M, _LHS, _bc_dirichlet, _bc_2):
+ def semi_lagrangian_cubic(_self, _npoints, _nelem, _neighbors_elements, _IEN, _x, _y, _vx, _vy, _dt, _Re, _Sc, _c, _M, _LHS, _bc_dirichlet, _bc_neumann, _bc_2):
   
   _self.scheme_name = 'Semi Lagrangian Cubic' 
   
@@ -227,13 +243,18 @@ class SemiImplicit_convection_diffusion2D:
   IEN = _IEN
   x = _x
   y = _y
+
   vx = _vx
   vy = _vy
   dt = _dt
   c = _c
+  Re = _Re
+  Sc = _Sc
+ 
   M = _M
   LHS = _LHS 
   bc_dirichlet = _bc_dirichlet
+  bc_neumann = _bc_neumann
   bc_2 = _bc_2
 
   #c_d = semi_lagrangian.Cubic2D_v2(npoints, nelem, IEN, x, y, vx, vy, dt, c)
@@ -242,6 +263,7 @@ class SemiImplicit_convection_diffusion2D:
   A = np.copy(M)/dt
   RHS = sps.lil_matrix.dot(A,c_d)
 
+  RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
   RHS = RHS + bc_dirichlet
 

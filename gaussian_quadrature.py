@@ -688,37 +688,96 @@ class Element2D:
 
    # Shape Functions
    # Lewis pag. 56 and 57 Eq. 3.81/3.82/3.83/3.84/3.85
-   N[k][0] = 0.5*L1*(3.0*L1 - 1.0)*(3.0*L1 - 2.0)   #N1 = 1/2*L1*(3*L1-1)*(3*L1-2)
-   N[k][1] = 0.5*L2*(3.0*L2 - 1.0)*(3.0*L2 - 2.0)   #N2 = 1/2*L2*(3*L2-1)*(3*L2-2)
-   N[k][2] = 0.5*L3*(3.0*L3 - 1.0)*(3.0*L3 - 2.0)   #N3 = 1/2*L3*(3*L3-1)*(3*L3-2)
-   N[k][3] = 4.5*L1*L2*(3.0*L1 - 1.0)               #N4 = 9/2*L1*L2(3*L1-1)
-   N[k][4] = 4.5*L1*L2*(3.0*L2 - 1.0)               #N5 = 9/2*L1*L2(3*L2-1)
-   N[k][5] = 4.5*L2*L3*(3.0*L2 - 1.0)               #N6 = 9/2*L2*L3(3*L2-1)
-   N[k][6] = 4.5*L2*L3*(3.0*L3 - 1.0)               #N7 = 9/2*L2*L3(3*L3-1)
-   N[k][7] = 4.5*L3*L1*(3.0*L3 - 1.0)               #N8 = 9/2*L3*L1(3*L3-1)
-   N[k][8] = 4.5*L3*L1*(3.0*L1 - 1.0)               #N9 = 9/2*L3*L1(3*L1-1)
+   N[k][0] = 0.5*L1*(3.0*L1 - 1.0)*(3.0*L1 - 2.0)   #N1  = 1/2*L1*(3*L1-1)*(3*L1-2)
+   N[k][1] = 0.5*L2*(3.0*L2 - 1.0)*(3.0*L2 - 2.0)   #N2  = 1/2*L2*(3*L2-1)*(3*L2-2)
+   N[k][2] = 0.5*L3*(3.0*L3 - 1.0)*(3.0*L3 - 2.0)   #N3  = 1/2*L3*(3*L3-1)*(3*L3-2)
+   N[k][3] = 4.5*L1*L2*(3.0*L1 - 1.0)               #N4  = 9/2*L1*L2(3*L1-1)
+   N[k][4] = 4.5*L1*L2*(3.0*L2 - 1.0)               #N5  = 9/2*L1*L2(3*L2-1)
+   N[k][5] = 4.5*L2*L3*(3.0*L2 - 1.0)               #N6  = 9/2*L2*L3(3*L2-1)
+   N[k][6] = 4.5*L2*L3*(3.0*L3 - 1.0)               #N7  = 9/2*L2*L3(3*L3-1)
+   N[k][7] = 4.5*L3*L1*(3.0*L3 - 1.0)               #N8  = 9/2*L3*L1(3*L3-1)
+   N[k][8] = 4.5*L3*L1*(3.0*L1 - 1.0)               #N9  = 9/2*L3*L1(3*L1-1)
    N[k][9] = 27.0*L1*L2*L3                          #N10 = 27*L1*L2*L3
 
 
-------------------------------PAREI AQUI FALTA DERIVAR---------------------------
-------------------------------SO FALTA ISSO AQUI PARA SIMULACAO---------------------------
-
    # Shape Functions Derivatives in respect to l1
-   dNdl1[k][0] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN1/dl1
-   dNdl1[k][1] =  0.0                                                         #dN2/dl1
-   dNdl1[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl1
-   dNdl1[k][3] =  4.0*_self.GQPoints[k][1]                                    #dN4/dl1
-   dNdl1[k][4] = -4.0*_self.GQPoints[k][1]                                    #dN5/dl1
-   dNdl1[k][5] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN6/dl1
+   #dN1/dl1
+   dNdl1[k][0] =  0.5*( 27.0*_self.GQPoints[k][0]**2 - 18.0*_self.GQPoints[k][0] + 2.0)
+
+   #dN2/dl1
+   dNdl1[k][1] =  0.0
+
+   #dN3/dl1
+   dNdl1[k][2] =  0.5*(-11.0 + 36.0*_self.GQPoints[k][1] - 54.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                      - 27.0*_self.GQPoints[k][1]**2 + 36.0*_self.GQPoints[k][0]\
+                      - 27.0*_self.GQPoints[k][0]**2)
+   #dN4/dl1
+   dNdl1[k][3] = 4.5*( 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1] - _self.GQPoints[k][1])
+
+   #dN5/dl1
+   dNdl1[k][4] = 4.5*( 3.0*_self.GQPoints[k][1]**2 - _self.GQPoints[k][1])
+
+   #dN6/dl1
+   dNdl1[k][5] = 4.5*(-3.0*_self.GQPoints[k][1]**2 + _self.GQPoints[k][1])
+
+   #dN7/dl1
+   dNdl1[k][6] = 4.5*(-5.0*_self.GQPoints[k][1] + 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     + 6.0*_self.GQPoints[k][1]**2)
+
+   #dN8/dl1
+   dNdl1[k][7] = 4.5*( 2.0 - 5.0*_self.GQPoints[k][1] - 10.0*_self.GQPoints[k][0]\
+                     + 3.0*_self.GQPoints[k][1]**2 + 12.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     + 9.0*_self.GQPoints[k][0]**2)
+
+   #dN9/dl1
+   dNdl1[k][8] = 4.5*(-1.0 + _self.GQPoints[k][1] + 8.0*_self.GQPoints[k][0]\
+                     - 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1] - 9.0*_self.GQPoints[k][0]**2)
+
+   #dN10/dl1
+   dNdl1[k][9] = 27.0*(_self.GQPoints[k][1] - 2.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     - _self.GQPoints[k][1]**2)
+
 
 
    # Shape Functions Derivatives in respect to l2
-   dNdl2[k][0] =  0.0                                                         #dN1/dl2
-   dNdl2[k][1] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN2/dl2
-   dNdl2[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl2
-   dNdl2[k][3] =  4.0*_self.GQPoints[k][0]                                    #dN4/dl2
-   dNdl2[k][4] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN5/dl2
-   dNdl2[k][5] = -4.0*_self.GQPoints[k][0]                                    #dN6/dl2
+   #dN1/dl2
+   dNdl2[k][0] =  0.0
+
+   #dN2/dl2
+   dNdl2[k][1] =  0.5*( 27.0*_self.GQPoints[k][1]**2 - 18.0*_self.GQPoints[k][1] + 2.0)
+
+   #dN3/dl2
+   dNdl2[k][2] =  0.5*(-11.0 + 36.0*_self.GQPoints[k][0] - 54.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                      - 27.0*_self.GQPoints[k][0]**2 + 36.0*_self.GQPoints[k][1]\
+                      - 27.0*_self.GQPoints[k][1]**2)
+
+   #dN4/dl2
+   dNdl2[k][3] = 4.5*( 3.0*_self.GQPoints[k][0]**2 - _self.GQPoints[k][0])
+
+   #dN5/dl2
+   dNdl2[k][4] = 4.5*( 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1] - _self.GQPoints[k][0])
+
+   #dN6/dl2
+   dNdl2[k][5] = 4.5*(-1.0 + _self.GQPoints[k][0] + 8.0*_self.GQPoints[k][1]\
+                     - 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1] - 9.0*_self.GQPoints[k][1]**2)
+
+   #dN7/dl2
+   dNdl2[k][6] = 4.5*( 2.0 - 5.0*_self.GQPoints[k][0] - 10.0*_self.GQPoints[k][1]\
+                     + 3.0*_self.GQPoints[k][0]**2 + 12.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     + 9.0*_self.GQPoints[k][1]**2)
+
+   #dN8/dl2
+   dNdl2[k][7] = 4.5*(-5.0*_self.GQPoints[k][0] + 6.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     + 6.0*_self.GQPoints[k][0]**2)
+
+   #dN9/dl2
+   dNdl2[k][8] = 4.5*(-3.0*_self.GQPoints[k][0]**2 + _self.GQPoints[k][0])
+
+   #dN10/dl2
+   dNdl2[k][9] = 27.0*(_self.GQPoints[k][0] - 2.0*_self.GQPoints[k][0]*_self.GQPoints[k][1]\
+                     - _self.GQPoints[k][0]**2)
+
+
 
    # Coordinate Transfomation
    # Lewis pag. 64 Eq. 3.108 for 1D
