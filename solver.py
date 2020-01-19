@@ -1,3 +1,14 @@
+# ==========================================
+# Code created by Leandro Marques at 01/2019
+# Gesar Search Group
+# State University of the Rio de Janeiro
+# e-mail: marquesleandro67@gmail.com
+# ==========================================
+
+# This code is used to solver governing equations
+
+
+
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg
@@ -32,7 +43,7 @@ class SemiImplicit_concentration_equation1D:
                                 - (dt/2.0)*np.multiply(vx,(np.multiply(vx,sps.lil_matrix.dot(K,c))))
  
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
  
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -63,7 +74,7 @@ class SemiImplicit_concentration_equation1D:
   RHS = sps.lil_matrix.dot(A,c_d)
  
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -94,7 +105,7 @@ class SemiImplicit_concentration_equation1D:
   RHS = sps.lil_matrix.dot(A,c_d)
  
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -143,7 +154,7 @@ class SemiImplicit_concentration_equation2D:
 
   RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
   
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -185,7 +196,7 @@ class SemiImplicit_concentration_equation2D:
  
   RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -224,7 +235,7 @@ class SemiImplicit_concentration_equation2D:
 
   RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -271,7 +282,7 @@ class SemiImplicit_concentration_equation2D:
 
   RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))
@@ -311,7 +322,7 @@ class SemiImplicit_concentration_equation2D:
 
   RHS = RHS + (1.0/(Re*Sc))*bc_neumann
   RHS = np.multiply(RHS,bc_2)
-  RHS = RHS + bc_dirichlet
+  RHS = RHS - bc_dirichlet
 
   c = scipy.sparse.linalg.cg(LHS,RHS,c, maxiter=1.0e+05, tol=1.0e-05)
   c = c[0].reshape((len(c[0]),1))

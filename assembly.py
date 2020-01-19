@@ -5,7 +5,7 @@
 # e-mail: marquesleandro67@gmail.com
 # ==========================================
 
-# This code is used for to assembly global matrices
+# This code is used to assembly global matrices
 
 # ------------------------------------------------------------------------------
 # Use:

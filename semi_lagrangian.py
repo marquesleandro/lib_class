@@ -5,7 +5,7 @@
 # e-mail: marquesleandro67@gmail.com
 # ==========================================
 
-# This code is used for to use semi-lagrangian scheme
+# This code is used to use semi-lagrangian scheme
 
 # ------------------------------------------------------------------------------------
 # Use:
