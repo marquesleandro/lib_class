@@ -891,6 +891,14 @@ def Quad2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar
 
      scalar[i] = N1*scalar1 + N2*scalar2 + N3*scalar3 + N4*scalar4 + N5*scalar5 + N6*scalar6
 
+     # Interpolation limits
+     scalar_limits = [scalar1,scalar2,scalar3]
+     if scalar[i] < min(scalar_limits):
+      scalar[i] = min(scalar_limits)
+
+     elif scalar[i] > max(scalar_limits):
+      scalar[i] = max(scalar_limits)
+     
      breaking = 1
      break
 
