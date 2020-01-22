@@ -209,7 +209,6 @@ class Element1D:
      _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]
    
 
-
  def quadratic(_self,_e):
   _self.NUMNODE = 3  #Quadratic One-dimensional Element - 3 Nodes
 

@@ -8,18 +8,22 @@
 # This code is used to apply boundaries conditions in simulator
 
 import sys
-import boundary_condition
+import benchmark_problems
+import scipy.sparse as sps
+import scipy.sparse.linalg
 
 
-def Element1D(_nphysical, _npoints, _x, _neumann_pts, _dirichlet_pts, _neighbors_nodes, _LHS, simulator_option):
+
+def Element1D(_nphysical, _npoints, _x, _dt, _K, _M, _G, _neumann_pts, _dirichlet_pts, _neighbors_nodes, simulator_option):
 
  # Convection1D
  if simulator_option == 1:
   # --------- Boundaries conditions --------------------
-  condition = boundary_condition.Convection1D(_nphysical, _npoints, _x)
+  LHS0 = (sps.lil_matrix.copy(_M)/_dt)
+  condition = benchmark_problems.Convection1D(_nphysical, _npoints, _x)
   condition.neumann_condition(_neumann_pts)
   condition.dirichlet_condition(_dirichlet_pts)
-  condition.gaussian_elimination(_LHS,_neighbors_nodes)
+  condition.gaussian_elimination(LHS0,_neighbors_nodes)
  
   # --------- Initial condition ------------------------
   condition.initial_condition()
@@ -38,15 +42,16 @@ def Element1D(_nphysical, _npoints, _x, _neumann_pts, _dirichlet_pts, _neighbors
 
 
 
-def Element2D(_nphysical, _npoints, _x, _y, _neumann_edges, _dirichlet_pts, _neighbors_nodes, _LHS, simulator_option):
+def Element2D(_nphysical, _npoints, _x, _y, _dt, _Kxx, _Kyx, _Kxy, Kyy, _M, _Gx, _Gy, _neumann_edges, _dirichlet_pts, _neighbors_nodes, simulator_option):
 
  # Convection2D
  if simulator_option == 4:
   # --------- Boundaries conditions --------------------
-  condition = boundary_condition.Convection2D(_nphysical, _npoints, _x, _y)
+  LHS0 = (sps.lil_matrix.copy(_M)/_dt)
+  condition = benchmark_problems.Convection2D(_nphysical, _npoints, _x, _y)
   condition.neumann_condition(_neumann_edges)
   condition.dirichlet_condition(_dirichlet_pts)
-  condition.gaussian_elimination(_LHS,_neighbors_nodes)
+  condition.gaussian_elimination(LHS0,_neighbors_nodes)
  
   # --------- Initial condition ------------------------
   condition.initial_condition()

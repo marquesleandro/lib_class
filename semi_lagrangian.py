@@ -279,6 +279,15 @@ def Quad1D(_npoints, _neighbors_elements, _IEN, _xn, _vx, _dt, _scalar):
      scalar3 = _scalar[v3]
 
      scalar[i] = N1*scalar1 + N2*scalar2 + N3*scalar3
+
+     # Interpolation limits
+     scalar_limits = [scalar1,scalar2,scalar3]
+     if scalar[i] < min(scalar_limits):
+      scalar[i] = min(scalar_limits)
+
+     elif scalar[i] > max(scalar_limits):
+      scalar[i] = max(scalar_limits)
+
      breaking = 1
      break
 
@@ -892,7 +901,7 @@ def Quad2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scalar
      scalar[i] = N1*scalar1 + N2*scalar2 + N3*scalar3 + N4*scalar4 + N5*scalar5 + N6*scalar6
 
      # Interpolation limits
-     scalar_limits = [scalar1,scalar2,scalar3]
+     scalar_limits = [scalar1,scalar2,scalar3,scalar4,scalar5,scalar6]
      if scalar[i] < min(scalar_limits):
       scalar[i] = min(scalar_limits)
 
@@ -1314,6 +1323,15 @@ def Cubic2D(_npoints, _neighbors_elements, _IEN, _xn, _yn, _vx, _vy, _dt, _scala
      scalar10 = _scalar[v10]
 
      scalar[i] = N1*scalar1 + N2*scalar2 + N3*scalar3 + N4*scalar4 + N5*scalar5 + N6*scalar6 + N7*scalar7 + N8*scalar8 + N9*scalar9 + N10*scalar10
+
+     # Interpolation limits
+     scalar_limits = [scalar1,scalar2,scalar3,scalar4,scalar5,scalar6,scalar7,scalar8,scalar9,scalar10]
+     if scalar[i] < min(scalar_limits):
+      scalar[i] = min(scalar_limits)
+
+     elif scalar[i] > max(scalar_limits):
+      scalar[i] = max(scalar_limits)
+ 
 
      breaking = 1
      break
