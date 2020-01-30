@@ -136,6 +136,63 @@ def Element2D(_simulator_problem, _scheme_option, _polynomial_option, _x, _y, _I
  neighbors_elements = _neighbors_elements
  directory_name = _directory_name
 
+
+ # Poiseuille Problem
+ if simulator_problem == 1:
+
+  # Taylor Galerkin Scheme
+  if scheme_option == 1:
+    # -------------------------------- Solver ---------------------------------------
+    scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
+    scheme.taylor_galerkin(c, vx, vy, dt, Re, Sc, M, Kxx, Kyx, Kxy, Kyy, Gx, Gy, LHS, bc_dirichlet, bc_neumann, bc_2)
+    c = scheme.c
+    return c, scheme.scheme_name
+    # -------------------------------------------------------------------------------
+
+
+  # Semi Lagrangian Scheme
+  elif scheme_option == 2:
+ 
+   if polynomial_option == 1: #Linear Element
+    # -------------------------------- Solver ---------------------------------------
+    scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
+    scheme.semi_lagrangian_linear(npoints, neighbors_nodes, neighbors_elements, IEN, x, y, vx, vy, dt, Re, Sc, c, M, LHS, bc_dirichlet, bc_neumann, bc_2)
+    c = scheme.c
+    
+    return c, scheme.scheme_name
+    # -------------------------------------------------------------------------------
+
+   elif polynomial_option == 2: #Mini Element
+    # -------------------------------- Solver ---------------------------------------
+    scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
+    scheme.semi_lagrangian_mini(npoints, nelem, neighbors_elements, IEN, x, y, vx, vy, dt, Re, Sc, c, M, LHS, bc_dirichlet, bc_neumann, bc_2)
+    c = scheme.c
+    return c, scheme.scheme_name
+    # -------------------------------------------------------------------------------
+
+
+   elif polynomial_option == 3: #Quadratic Element
+    # -------------------------------- Solver ---------------------------------------
+    scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
+    scheme.semi_lagrangian_quad(npoints, nelem, neighbors_elements, IEN, x, y, vx, vy, dt, Re, Sc, c, M, LHS, bc_dirichlet, bc_neumann, bc_2)
+    c = scheme.c
+    return c, scheme.scheme_name
+    # -------------------------------------------------------------------------------
+
+   elif polynomial_option == 4: #Cubic Element
+    # -------------------------------- Solver ---------------------------------------
+    scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
+    scheme.semi_lagrangian_cubic(npoints, nelem, neighbors_elements, IEN, x, y, vx, vy, dt, Re, Sc, c, M, LHS, bc_dirichlet, bc_neumann, bc_2)
+    c = scheme.c
+    return c, scheme.scheme_name
+    # -------------------------------------------------------------------------------
+
+
+
+
+
+
+ # Convection Problem
  if simulator_problem == 4:
   # Taylor Galerkin Scheme
   if scheme_option == 1:

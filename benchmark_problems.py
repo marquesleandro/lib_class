@@ -136,7 +136,7 @@ class Poiseuille:
 # # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
@@ -175,7 +175,7 @@ class Poiseuille:
     _self.ibc.append(v1)
     _self.ibc.append(v2)
 
-   else:
+   elif line == 10:
     _self.bc_1[v1] = _self.y[v1]
     _self.bc_1[v2] = _self.y[v2]
 
@@ -188,7 +188,7 @@ class Poiseuille:
   # Gaussian elimination for psi
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
