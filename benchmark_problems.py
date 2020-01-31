@@ -45,6 +45,7 @@ class Poiseuille:
   _self.x = _x
   _self.y = _y
   _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+  _self.benchmark_problem = 'Poiseuille'
 
   # Velocity vx condition
   _self.bc[0][0] = 0.0
@@ -79,7 +80,6 @@ class Poiseuille:
  def dirichlet_condition(_self, _dirichlet_pts):
   _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
   _self.ibc = [] 
-  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
   _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
   _self.dirichlet_pts = _dirichlet_pts
  
@@ -106,34 +106,6 @@ class Poiseuille:
   _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
   _self.neighbors_nodes = _neighbors_nodes
 
-#  # Scipy sparse - Method 1
-#  _self.LHS = _self.LHS.tolil() #For scipy array
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-#   #_self.bc_dirichlet += _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
-#   _self.bc_dirichlet += _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
-#   _self.LHS[:,mm] = 0.0
-#   _self.LHS[mm,:] = 0.0
-#   _self.LHS[mm,mm] = 1.0
-#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
-#   _self.bc_2[mm] = 0.0
-#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
-
-#  # Scipy sparse - Method 2
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-# 
-#   for nn in _self.neighbors_nodes[mm]:
-#    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
-#    _self.LHS[nn,mm] = 0.0
-#    _self.LHS[mm,nn] = 0.0
-#   
-#   _self.LHS[mm,mm] = 1.0
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
-#   _self.bc_2[mm] = 0.0
- 
-# # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
     _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
@@ -229,6 +201,7 @@ class Cavity:
   _self.x = _x
   _self.y = _y
   _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+  _self.benchmark_problem = 'Cavity'
 
   # Velocity vx condition - pg. 7
   _self.bc[0][0] = 0.0 
@@ -263,7 +236,6 @@ class Cavity:
  def dirichlet_condition(_self, _dirichlet_pts):
   _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
   _self.ibc = [] 
-  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
   _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
   _self.dirichlet_pts = _dirichlet_pts
  
@@ -290,37 +262,9 @@ class Cavity:
   _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
   _self.neighbors_nodes = _neighbors_nodes
 
-#  # Scipy sparse - Method 1
-#  _self.LHS = _self.LHS.tolil() #For scipy array
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-#   #_self.bc_dirichlet += _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
-#   _self.bc_dirichlet += _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
-#   _self.LHS[:,mm] = 0.0
-#   _self.LHS[mm,:] = 0.0
-#   _self.LHS[mm,mm] = 1.0
-#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
-#   _self.bc_2[mm] = 0.0
-#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
-
-#  # Scipy sparse - Method 2
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-# 
-#   for nn in _self.neighbors_nodes[mm]:
-#    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
-#    _self.LHS[nn,mm] = 0.0
-#    _self.LHS[mm,nn] = 0.0
-#   
-#   _self.LHS[mm,mm] = 1.0
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
-#   _self.bc_2[mm] = 0.0
- 
-# # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
@@ -352,6 +296,7 @@ class Convection2D:
   _self.x = _x
   _self.y = _y
   _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+  _self.benchmark_problem = 'Convection 2D'
 
   # Velocity c condition
   _self.bc[0][0] = 0.0
@@ -380,7 +325,6 @@ class Convection2D:
  def dirichlet_condition(_self, _dirichlet_pts):
   _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
   _self.ibc = [] 
-  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
   _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
   _self.dirichlet_pts = _dirichlet_pts
  
@@ -407,37 +351,9 @@ class Convection2D:
   _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
   _self.neighbors_nodes = _neighbors_nodes
 
-#  # Scipy sparse - Method 1
-#  _self.LHS = _self.LHS.tolil() #For scipy array
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-#   #_self.bc_dirichlet += _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
-#   _self.bc_dirichlet += _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
-#   _self.LHS[:,mm] = 0.0
-#   _self.LHS[mm,:] = 0.0
-#   _self.LHS[mm,mm] = 1.0
-#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
-#   _self.bc_2[mm] = 0.0
-#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
-
-#  # Scipy sparse - Method 2
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-# 
-#   for nn in _self.neighbors_nodes[mm]:
-#    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
-#    _self.LHS[nn,mm] = 0.0
-#    _self.LHS[mm,nn] = 0.0
-#   
-#   _self.LHS[mm,mm] = 1.0
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
-#   _self.bc_2[mm] = 0.0
- 
-# # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
@@ -498,6 +414,7 @@ class Half_Poiseuille:
   _self.x = _x
   _self.y = _y
   _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+  _self.benchmark_problem = 'Half Poiseuille'
 
   # Velocity vx condition
   _self.bc[0][0] = 0.0
@@ -532,7 +449,6 @@ class Half_Poiseuille:
  def dirichlet_condition(_self, _dirichlet_pts):
   _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
   _self.ibc = [] 
-  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
   _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
   _self.dirichlet_pts = _dirichlet_pts
  
@@ -559,37 +475,9 @@ class Half_Poiseuille:
   _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
   _self.neighbors_nodes = _neighbors_nodes
 
-#  # Scipy sparse - Method 1
-#  _self.LHS = _self.LHS.tolil() #For scipy array
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-#   #_self.bc_dirichlet += _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
-#   _self.bc_dirichlet += _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
-#   _self.LHS[:,mm] = 0.0
-#   _self.LHS[mm,:] = 0.0
-#   _self.LHS[mm,mm] = 1.0
-#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
-#   _self.bc_2[mm] = 0.0
-#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
-
-#  # Scipy sparse - Method 2
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-# 
-#   for nn in _self.neighbors_nodes[mm]:
-#    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
-#    _self.LHS[nn,mm] = 0.0
-#    _self.LHS[mm,nn] = 0.0
-#   
-#   _self.LHS[mm,mm] = 1.0
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
-#   _self.bc_2[mm] = 0.0
- 
-# # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
@@ -628,7 +516,7 @@ class Half_Poiseuille:
     _self.ibc.append(v1)
     _self.ibc.append(v2)
 
-   else:
+   elif line == 10:
     _self.bc_1[v1] = _self.y[v1]
     _self.bc_1[v2] = _self.y[v2]
 
@@ -641,7 +529,7 @@ class Half_Poiseuille:
   # Gaussian elimination for psi
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
@@ -671,6 +559,7 @@ class Convection1D:
   _self.npoints = _npoints
   _self.x = _x
   _self.bc = np.zeros([_self.nphysical,1], dtype = float) 
+  _self.benchmark_problem = 'Convection 1D'
 
   # Velocity c condition
   _self.bc[0][0] = 0.0
@@ -691,7 +580,6 @@ class Convection1D:
  def dirichlet_condition(_self, _dirichlet_pts):
   _self.bc_dirichlet = np.zeros([_self.npoints,1], dtype = float) 
   _self.ibc = [] 
-  #_self.bc_1 = np.zeros([1,_self.npoints], dtype = float) #For numpy array solve
   _self.bc_1 = np.zeros([_self.npoints,1], dtype = float) #For scipy array solve
   _self.dirichlet_pts = _dirichlet_pts
  
@@ -714,37 +602,9 @@ class Convection1D:
   _self.bc_2 = np.ones([_self.npoints,1], dtype = float) 
   _self.neighbors_nodes = _neighbors_nodes
 
-#  # Scipy sparse - Method 1
-#  _self.LHS = _self.LHS.tolil() #For scipy array
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-#   #_self.bc_dirichlet += _self.LHS[:,mm]*_self.bc_1[mm] #For numpy array
-#   _self.bc_dirichlet += _self.LHS[:,mm].todense()*_self.bc_1[mm] #For scipy array
-#   _self.LHS[:,mm] = 0.0
-#   _self.LHS[mm,:] = 0.0
-#   _self.LHS[mm,mm] = 1.0
-#   #_self.bc_dirichlet[0][mm] = _self.bc_1[mm] #For numpy array solve
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm] #For scipy array solve
-#   _self.bc_2[mm] = 0.0
-#  #_self.bc_1 = np.transpose(_self.bc_1) #For numpy array solve
-
-#  # Scipy sparse - Method 2
-#  for i in range(0,len(_self.ibc)):
-#   mm = _self.ibc[i]
-# 
-#   for nn in _self.neighbors_nodes[mm]:
-#    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
-#    _self.LHS[nn,mm] = 0.0
-#    _self.LHS[mm,nn] = 0.0
-#   
-#   _self.LHS[mm,mm] = 1.0
-#   _self.bc_dirichlet[mm] = _self.bc_1[mm]
-#   _self.bc_2[mm] = 0.0
- 
-# # Scipy sparse - Method 3
   for mm in _self.ibc:
    for nn in _self.neighbors_nodes[mm]:
-    _self.bc_dirichlet[nn] += float(_self.LHS[nn,mm]*_self.bc_1[mm])
+    _self.bc_dirichlet[nn] -= float(_self.LHS[nn,mm]*_self.bc_1[mm])
     _self.LHS[nn,mm] = 0.0
     _self.LHS[mm,nn] = 0.0
    
