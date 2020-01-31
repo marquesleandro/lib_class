@@ -441,13 +441,8 @@ class Element2D:
   dNdx = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
   dNdy = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
 
-  i = _self.IEN[_e][0]
-  j = _self.IEN[_e][1]
-  k = _self.IEN[_e][2]
-
-  jacobian = np.linalg.det(np.array([[1, _self.x[i], _self.y[i]],
-                                     [1, _self.x[j], _self.y[j]],
-                                     [1, _self.x[k], _self.y[k]]], dtype = float))
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
 
 
   # A loop is required for each pair of coordinates (l1,l2)
@@ -487,11 +482,21 @@ class Element2D:
     dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
 
 
+   # Jacobian Matrix
+   # Lewis pag. 66 Eq. 3.121
+   J[0][0] = dxdl1[k]
+   J[0][1] = dydl1[k]
+   J[1][0] = dxdl2[k]
+   J[1][1] = dydl2[k]
+
+   jacobian[k] = np.linalg.det(J)
+
+
    # Shape Functions Derivatives in respect to x and y
    # Lewis pag. 65 Eq. 3.116
    for i in range(0,_self.NUMNODE):
-    dNdx[k][i] = (1.0/jacobian)*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
-    dNdy[k][i] = (1.0/jacobian)*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
+    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
+    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
 
 
 
@@ -513,18 +518,18 @@ class Element2D:
    for i in range(0,_self.NUMNODE):
     for j in range(0,_self.NUMNODE):
     
-     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian*_self.GQWeights[k]/2.0
+     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.kxx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian*_self.GQWeights[k]/2.0
-     _self.kxy[i][j] += dNdx[k][i]*dNdy[k][j]*jacobian*_self.GQWeights[k]/2.0
-     _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian*_self.GQWeights[k]/2.0
-     _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian*_self.GQWeights[k]/2.0
+     _self.kxx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kxy[i][j] += dNdx[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian*_self.GQWeights[k]/2.0
-     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian*_self.GQWeights[k]/2.0
+     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian*_self.GQWeights[k]/2.0
-     _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian*_self.GQWeights[k]/2.0
+     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
   
 
  def mini(_self,_e):
@@ -540,11 +545,13 @@ class Element2D:
   dydl1 = np.zeros([_self.NUMGAUSS,1], dtype = float)
   dydl2 = np.zeros([_self.NUMGAUSS,1], dtype = float)
 
-  J = np.zeros([2,2], dtype = float)
-  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
-  
   dNdx = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
   dNdy = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
+
+
 
   # A loop is required for each pair of coordinates (l1,l2)
   for k in range(0,_self.NUMGAUSS):
@@ -617,14 +624,6 @@ class Element2D:
 
    jacobian[k] = np.linalg.det(J)
 
-#   jacobian_inv = np.linalg.inv(J)
-
-   # Shape Functions Derivatives in respect to x and y
-   # Lewis pag. 65 Eq. 3.115
-#   for i in range(0,_self.NUMNODE):
-#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
-#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
-
 
    # Shape Functions Derivatives in respect to x and y
    # Lewis pag. 65 Eq. 3.116
@@ -659,8 +658,8 @@ class Element2D:
      _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
-     _self.gy[i][j] += dNdy[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
     
      _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
@@ -683,11 +682,13 @@ class Element2D:
   dydl1 = np.zeros([_self.NUMGAUSS,1], dtype = float)
   dydl2 = np.zeros([_self.NUMGAUSS,1], dtype = float)
 
-  J = np.zeros([2,2], dtype = float)
-  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
-  
   dNdx = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
   dNdy = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
+
+
 
   # A loop is required for each pair of coordinates (l1,l2)
   for k in range(0,_self.NUMGAUSS):
@@ -734,6 +735,7 @@ class Element2D:
     dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
     dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
 
+
    # Jacobian Matrix
    # Lewis pag. 66 Eq. 3.121
    J[0][0] = dxdl1[k]
@@ -742,14 +744,6 @@ class Element2D:
    J[1][1] = dydl2[k]
 
    jacobian[k] = np.linalg.det(J)
-
-#   jacobian_inv = np.linalg.inv(J)
-
-   # Shape Functions Derivatives in respect to x and y
-   # Lewis pag. 65 Eq. 3.115
-#   for i in range(0,_self.NUMNODE):
-#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
-#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
 
 
    # Shape Functions Derivatives in respect to x and y
@@ -785,8 +779,8 @@ class Element2D:
      _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
-     _self.gy[i][j] += dNdy[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
     
      _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
@@ -807,11 +801,14 @@ class Element2D:
   dydl1 = np.zeros([_self.NUMGAUSS,1], dtype = float)
   dydl2 = np.zeros([_self.NUMGAUSS,1], dtype = float)
 
-  J = np.zeros([2,2], dtype = float)
-  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
-  
   dNdx = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
   dNdy = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+
+  J = np.zeros([2,2], dtype = float)
+  jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
+
+
+
 
   # A loop is required for each pair of coordinates (l1,l2)
   for k in range(0,_self.NUMGAUSS):
@@ -925,6 +922,8 @@ class Element2D:
     dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
     dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
 
+
+
    # Jacobian Matrix
    # Lewis pag. 66 Eq. 3.121
    J[0][0] = dxdl1[k]
@@ -933,14 +932,6 @@ class Element2D:
    J[1][1] = dydl2[k]
 
    jacobian[k] = np.linalg.det(J)
-
-#   jacobian_inv = np.linalg.inv(J)
-
-   # Shape Functions Derivatives in respect to x and y
-   # Lewis pag. 65 Eq. 3.115
-#   for i in range(0,_self.NUMNODE):
-#    dNdx[k][i] = jacobian_inv[0][0]*dNdl1[k][i] + jacobian_inv[0][1]*dNdl2[k][i]
-#    dNdy[k][i] = jacobian_inv[1][0]*dNdl1[k][i] + jacobian_inv[1][1]*dNdl2[k][i]
 
 
    # Shape Functions Derivatives in respect to x and y
@@ -976,8 +967,8 @@ class Element2D:
      _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.gx[i][j] += dNdx[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
-     _self.gy[i][j] += dNdy[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
     
      _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
