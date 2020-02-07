@@ -703,10 +703,10 @@ class Element2D:
  def quadratic(_self,_e):
   _self.NUMNODE = 6  #Quadratic Triangular Element - 6 Nodes
   
-  N = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+#  _self.N = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
 
-  dNdl1 = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
-  dNdl2 = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+#  _self.dNdl1 = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
+#  _self.dNdl2 = np.zeros([_self.NUMGAUSS,_self.NUMNODE], dtype = float)
   
   dxdl1 = np.zeros([_self.NUMGAUSS,1], dtype = float)
   dxdl2 = np.zeros([_self.NUMGAUSS,1], dtype = float)
@@ -720,41 +720,81 @@ class Element2D:
   jacobian = np.zeros([_self.NUMGAUSS,1], dtype = float)
 
 
+  _self.N = np.array([[-0.124998982535, -0.124998982535, 0.001430579518, 0.248575525272, 0.499995930140, 0.499995930140],
+                      [-0.124998982535, 0.001430579518, -0.124998982535, 0.499995930140, 0.499995930140, 0.248575525272],
+                      [0.001430579518, -0.124998982535, -0.124998982535, 0.499995930140, 0.248575525272, 0.499995930140],
+                      [-0.055128566992, -0.055128566992, 0.653307703047, 0.015920894998, 0.220514267970, 0.220514267970],
+                      [-0.055128566992, 0.653307703047, -0.055128566992, 0.220514267970, 0.220514267970, 0.015920894998],
+                      [0.653307703047, -0.055128566992, -0.055128566992, 0.220514267970, 0.015920894998, 0.220514267970],
+                      [-0.117715163308, 0.173768363654, -0.047496257199, 0.790160442766, 0.135307828169, 0.065974785919],
+                      [0.173768363654, -0.047496257199, -0.117715163308, 0.135307828169, 0.065974785919, 0.790160442766],
+                      [-0.047496257199, -0.117715163308, 0.173768363654, 0.065974785919, 0.790160442766, 0.135307828169],
+                      [0.173768363654, -0.117715163308, -0.047496257199, 0.790160442766, 0.065974785919, 0.135307828169],
+                      [-0.117715163308, -0.047496257199, 0.173768363654, 0.065974785919, 0.135307828169, 0.790160442766],
+                      [-0.047496257199, 0.173768363654, -0.117715163308, 0.135307828169, 0.790160442766, 0.065974785919]])
+
+
+  _self.dNdl1 = np.array([[-0.002853019316, 0.000000000000, -1.005706038632, 0.997146980684, -0.997146980684, 1.008559057948],
+                          [-0.002853019316, 0.000000000000, 0.002853019316, 2.005706038632, -2.005706038632, 0.000000000000 ],
+                          [1.005706038632, 0.000000000000, 0.002853019316, 0.997146980684,  -0.997146980684, -1.008559057948],
+                          [-0.747643942034, 0.000000000000, -2.495287884068, 0.252356057966, -0.252356057966, 3.242931826102],
+                          [-0.747643942034, 0.000000000000, 0.747643942034, 3.495287884068,  -3.495287884068, -0.00000000000],
+                          [2.495287884068, 0.000000000000, 0.747643942034, 0.252356057966, -0.252356057966, -3.242931826102 ],
+                          [0.241409804136, 0.000000000000, 0.787419800620, 2.546009996484, -2.546009996484, -1.028829604756 ],
+                          [1.546009996484, 0.000000000000, -0.241409804137, 0.212580199379, -0.212580199379, -1.304600192347],
+                          [-0.787419800621, 0.000000000000, -1.546009996485, 1.241409804136, -1.241409804136, 2.333429797106],
+                          [1.546009996484, 0.000000000000, 0.787419800620, 1.241409804136, -1.241409804136, -2.333429797104 ],
+                          [0.241409804136, 0.000000000000, -1.546009996485, 0.212580199379, -0.212580199379, 1.304600192349 ],
+                          [-0.787419800621, 0.000000000000, -0.241409804137, 2.546009996484, -2.546009996484, 1.028829604758]])
+
+
+  _self.dNdl2 = np.array([[0.000000000000, -0.002853019316, -1.005706038632, 0.997146980684, 1.008559057948, -0.997146980684],
+                          [0.000000000000, 1.005706038632, 0.002853019316, 0.997146980684, -1.008559057948, -0.997146980684 ],
+                          [0.000000000000, -0.002853019316, 0.002853019316, 2.005706038632, -0.000000000000, -2.005706038632],
+                          [0.000000000000, -0.747643942034, -2.495287884068, 0.252356057966, 3.242931826102, -0.252356057966],
+                          [0.000000000000, 2.495287884068, 0.747643942034, 0.252356057966, -3.242931826102, -0.252356057966 ],
+                          [0.000000000000, -0.747643942034, 0.747643942034, 3.495287884068, -0.000000000000, -3.495287884068],
+                          [0.000000000000, 1.546009996484, 0.787419800620, 1.241409804136, -2.333429797104, -1.241409804136 ],
+                          [0.000000000000, -0.787419800621, -0.241409804137, 2.546009996484, 1.028829604758, -2.546009996484],
+                          [0.000000000000, 0.241409804136, -1.546009996485, 0.212580199379, 1.304600192349, -0.212580199379 ],
+                          [0.000000000000, 0.241409804136, 0.787419800620, 2.546009996484, -1.028829604756, -2.546009996484 ],
+                          [0.000000000000, -0.787419800621, -1.546009996485, 1.241409804136, 2.333429797106, -1.241409804136],
+                          [0.000000000000, 1.546009996484, -0.241409804137, 0.212580199379, -1.304600192347, -0.212580199379]])
 
   # A loop is required for each pair of coordinates (l1,l2)
   for k in range(0,_self.NUMGAUSS):
     
    # Area Coordinates
    # Lewis pag. 67 Eq. 3.129
-   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L1 = 1 - l1 - l2
-   L2 = _self.GQPoints[k][0]                                #L2 = l1
-   L3 = _self.GQPoints[k][1]                                #L3 = l2
+#   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L1 = 1 - l1 - l2
+#   L2 = _self.GQPoints[k][0]                                #L2 = l1
+#   L3 = _self.GQPoints[k][1]                                #L3 = l2
 
    # Shape Functions
    # Lewis pag. 67 Eq. 3.130
-   N[k][0] = L1*(2.0*L1 - 1.0)  #N1 = L1*(2*L1-1)
-   N[k][1] = L2*(2.0*L2 - 1.0)  #N2 = L2*(2*L2-1)
-   N[k][2] = L3*(2.0*L3 - 1.0)  #N3 = L3*(2*L3-1)
-   N[k][3] = 4.0*L1*L2          #N4 = 4*L1*L2
-   N[k][4] = 4.0*L2*L3          #N5 = 4*L2*L3
-   N[k][5] = 4.0*L3*L1          #N6 = 4*L3*L1
+#   _self.N[k][0] = L1*(2.0*L1 - 1.0)  #N1 = L1*(2*L1-1)
+#   _self.N[k][1] = L2*(2.0*L2 - 1.0)  #N2 = L2*(2*L2-1)
+#   _self.N[k][2] = L3*(2.0*L3 - 1.0)  #N3 = L3*(2*L3-1)
+#   _self.N[k][3] = 4.0*L1*L2          #N4 = 4*L1*L2
+#   _self.N[k][4] = 4.0*L2*L3          #N5 = 4*L2*L3
+#   _self.N[k][5] = 4.0*L3*L1          #N6 = 4*L3*L1
 
    # Shape Functions Derivatives in respect to l1
-   dNdl1[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl1
-   dNdl1[k][1] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN2/dl1
-   dNdl1[k][2] =  0.0                                                         #dN3/dl1
-   dNdl1[k][3] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN4/dl1
-   dNdl1[k][4] =  4.0*_self.GQPoints[k][1]                                    #dN5/dl1
-   dNdl1[k][5] = -4.0*_self.GQPoints[k][1]                                    #dN6/dl1
+#   _self.dNdl1[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl1
+#   _self.dNdl1[k][1] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN2/dl1
+#   _self.dNdl1[k][2] =  0.0                                                         #dN3/dl1
+#   _self.dNdl1[k][3] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN4/dl1
+#   _self.dNdl1[k][4] =  4.0*_self.GQPoints[k][1]                                    #dN5/dl1
+#   _self.dNdl1[k][5] = -4.0*_self.GQPoints[k][1]                                    #dN6/dl1
 
 
    # Shape Functions Derivatives in respect to l2
-   dNdl2[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl2
-   dNdl2[k][1] =  0.0                                                         #dN2/dl2
-   dNdl2[k][2] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN3/dl2
-   dNdl2[k][3] = -4.0*_self.GQPoints[k][0]                                    #dN4/dl2
-   dNdl2[k][4] =  4.0*_self.GQPoints[k][0]                                    #dN5/dl2
-   dNdl2[k][5] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN6/dl2
+#   _self.dNdl2[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl2
+#   _self.dNdl2[k][1] =  0.0                                                         #dN2/dl2
+#   _self.dNdl2[k][2] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN3/dl2
+#   _self.dNdl2[k][3] = -4.0*_self.GQPoints[k][0]                                    #dN4/dl2
+#   _self.dNdl2[k][4] =  4.0*_self.GQPoints[k][0]                                    #dN5/dl2
+#   _self.dNdl2[k][5] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN6/dl2
 
    # Coordinate Transfomation
    # Lewis pag. 64 Eq. 3.108 for 1D
@@ -762,10 +802,10 @@ class Element2D:
    for i in range(0,_self.NUMNODE):
     ii = _self.IEN[_e][i]
     
-    dxdl1[k] += _self.x[ii]*dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
-    dydl1[k] += _self.y[ii]*dNdl1[k][i]   # dy/dl1 = y1*dN1/dl1 + y2*dN2/dl1 + y3*dN3/dl1 ...
-    dxdl2[k] += _self.x[ii]*dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
-    dydl2[k] += _self.y[ii]*dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
+    dxdl1[k] += _self.x[ii]*_self.dNdl1[k][i]   # dx/dl1 = x1*dN1/dl1 + x2*dN2/dl1 + x3*dN3/dl1 ...
+    dydl1[k] += _self.y[ii]*_self.dNdl1[k][i]   # dy/dl1 = y1*dN1/dl1 + y2*dN2/dl1 + y3*dN3/dl1 ...
+    dxdl2[k] += _self.x[ii]*_self.dNdl2[k][i]   # dx/dl2 = x1*dN1/dl2 + x2*dN2/dl2 + x3*dN3/dl2 ...
+    dydl2[k] += _self.y[ii]*_self.dNdl2[k][i]   # dy/dl2 = y1*dN1/dl2 + y2*dN2/dl2 + y3*dN3/dl2 ...
 
 
    # Jacobian Matrix
@@ -781,8 +821,8 @@ class Element2D:
    # Shape Functions Derivatives in respect to x and y
    # Lewis pag. 65 Eq. 3.116
    for i in range(0,_self.NUMNODE):
-    dNdx[k][i] = (1.0/jacobian[k])*( dNdl1[k][i]*dydl2[k] - dNdl2[k][i]*dydl1[k])
-    dNdy[k][i] = (1.0/jacobian[k])*(-dNdl1[k][i]*dxdl2[k] + dNdl2[k][i]*dxdl1[k])
+    dNdx[k][i] = (1.0/jacobian[k])*( _self.dNdl1[k][i]*dydl2[k] - _self.dNdl2[k][i]*dydl1[k])
+    dNdy[k][i] = (1.0/jacobian[k])*(-_self.dNdl1[k][i]*dxdl2[k] + _self.dNdl2[k][i]*dxdl1[k])
 
 
 
@@ -804,18 +844,18 @@ class Element2D:
    for i in range(0,_self.NUMNODE):
     for j in range(0,_self.NUMNODE):
     
-     _self.mass[i][j] += N[k][i]*N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.mass[i][j] += _self.N[k][i]*_self.N[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
      _self.kxx[i][j] += dNdx[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kxy[i][j] += dNdx[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kyx[i][j] += dNdy[k][i]*dNdx[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
      _self.kyy[i][j] += dNdy[k][i]*dNdy[k][j]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.gx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
-     _self.gy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gx[i][j] += dNdx[k][j]*_self.N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.gy[i][j] += dNdy[k][j]*_self.N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
     
-     _self.dx[i][j] += dNdx[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
-     _self.dy[i][j] += dNdy[k][j]*N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.dx[i][j] += dNdx[k][j]*_self.N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
+     _self.dy[i][j] += dNdy[k][j]*_self.N[k][i]*jacobian[k]*_self.GQWeights[k]/2.0
   
 
 
