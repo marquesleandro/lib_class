@@ -388,7 +388,6 @@ class Element2D:
   elif _GAUSSPOINTS == 12:
    _self.NUMGAUSS = 12  #Number of Gauss Points
 
-
    #                                 l1                 l2
    _self.GQPoints = np.array([[0.24928674517091, 0.24928674517091],
                               [0.24928674517091, 0.50142650965818],
@@ -416,8 +415,40 @@ class Element2D:
                                [0.08285107561837],
                                [0.08285107561837],
                                [0.08285107561837]])
+   '''
+ 
+ 
+    #                                 l1                 l2
+   _self.GQPoints = np.array([[0.219429982550000, 0.561140034900000],
+                              [0.561140034900000, 0.219429982550000],
+                              [0.219429982550000, 0.219429982550000],
+                              [0.480137964112000, 0.039724071775600],
+                              [0.039724071775600, 0.480137964112000],
+                              [0.480137964112000, 0.480137964112000],
+                              [0.019371724361200, 0.839009259715000],
+                              [0.141619015924000, 0.019371724361200],
+                              [0.839009259715000, 0.141619015924000],
+                              [0.141619015924000, 0.839009259715000],
+                              [0.019371724361200, 0.141619015924000],
+                              [0.839009259715000, 0.019371724361200]])
 
 
+    #                                    w
+   _self.GQWeights = np.array([[0.171333124153000],
+                               [0.171333124153000],
+                               [0.171333124153000],
+                               [0.080731089593000],
+                               [0.080731089593000],
+                               [0.080731089593000],
+                               [0.040634559793700],
+                               [0.040634559793700],
+                               [0.040634559793700],
+                               [0.040634559793700],
+                               [0.040634559793700],
+                               [0.040634559793700]])
+ 
+ 
+  '''
   else:
    print ""
    print " Error: Gauss Points not found"
@@ -694,9 +725,10 @@ class Element2D:
   for k in range(0,_self.NUMGAUSS):
     
    # Area Coordinates
-   L1 = _self.GQPoints[k][0]                                #L1 = l1
-   L2 = _self.GQPoints[k][1]                                #L2 = l2
-   L3 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L3 = 1 - l1 - l2
+   # Lewis pag. 67 Eq. 3.129
+   L1 = 1.0 - _self.GQPoints[k][0] - _self.GQPoints[k][1]   #L1 = 1 - l1 - l2
+   L2 = _self.GQPoints[k][0]                                #L2 = l1
+   L3 = _self.GQPoints[k][1]                                #L3 = l2
 
    # Shape Functions
    # Lewis pag. 67 Eq. 3.130
@@ -708,21 +740,21 @@ class Element2D:
    N[k][5] = 4.0*L3*L1          #N6 = 4*L3*L1
 
    # Shape Functions Derivatives in respect to l1
-   dNdl1[k][0] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN1/dl1
-   dNdl1[k][1] =  0.0                                                         #dN2/dl1
-   dNdl1[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl1
-   dNdl1[k][3] =  4.0*_self.GQPoints[k][1]                                    #dN4/dl1
-   dNdl1[k][4] = -4.0*_self.GQPoints[k][1]                                    #dN5/dl1
-   dNdl1[k][5] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN6/dl1
+   dNdl1[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl1
+   dNdl1[k][1] =  4.0*_self.GQPoints[k][0] - 1.0                              #dN2/dl1
+   dNdl1[k][2] =  0.0                                                         #dN3/dl1
+   dNdl1[k][3] =  4.0 - 8.0*_self.GQPoints[k][0] - 4.0*_self.GQPoints[k][1]   #dN4/dl1
+   dNdl1[k][4] =  4.0*_self.GQPoints[k][1]                                    #dN5/dl1
+   dNdl1[k][5] = -4.0*_self.GQPoints[k][1]                                    #dN6/dl1
 
 
    # Shape Functions Derivatives in respect to l2
-   dNdl2[k][0] =  0.0                                                         #dN1/dl2
-   dNdl2[k][1] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN2/dl2
-   dNdl2[k][2] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN3/dl2
-   dNdl2[k][3] =  4.0*_self.GQPoints[k][0]                                    #dN4/dl2
-   dNdl2[k][4] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN5/dl2
-   dNdl2[k][5] = -4.0*_self.GQPoints[k][0]                                    #dN6/dl2
+   dNdl2[k][0] = -3.0 + 4.0*_self.GQPoints[k][0] + 4.0*_self.GQPoints[k][1]   #dN1/dl2
+   dNdl2[k][1] =  0.0                                                         #dN2/dl2
+   dNdl2[k][2] =  4.0*_self.GQPoints[k][1] - 1.0                              #dN3/dl2
+   dNdl2[k][3] = -4.0*_self.GQPoints[k][0]                                    #dN4/dl2
+   dNdl2[k][4] =  4.0*_self.GQPoints[k][0]                                    #dN5/dl2
+   dNdl2[k][5] =  4.0 - 4.0*_self.GQPoints[k][0] - 8.0*_self.GQPoints[k][1]   #dN6/dl2
 
    # Coordinate Transfomation
    # Lewis pag. 64 Eq. 3.108 for 1D
