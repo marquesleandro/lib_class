@@ -250,19 +250,19 @@ def Element2D(_simulator_problem, _scheme_option, _polynomial_option, _x, _y, _I
 
 
    elif polynomial_option == 3: #Quadratic Element
-    for t in tqdm(range(0, nt)):
+    #for t in tqdm(range(0, nt)):
  
      # ------------------------ Export VTK File ---------------------------------------
-     save = export_vtk.Linear2D(x,y,IEN,npoints,nelem,c,c,c,vx,vy)
-     save.create_dir(directory_name)
-     save.saveVTK(directory_name + str(t))
+     #save = export_vtk.Linear2D(x,y,IEN,npoints,nelem,c,c,c,vx,vy)
+     #save.create_dir(directory_name)
+     #save.saveVTK(directory_name + str(t))
      # --------------------------------------------------------------------------------
  
      # -------------------------------- Solver ---------------------------------------
      scheme = solver.SemiImplicit_concentration_equation2D(scheme_option)
      scheme.semi_lagrangian_quad(npoints, nelem, neighbors_elements, IEN, x, y, vx, vy, dt, Re, Sc, c, M, LHS, bc_dirichlet, bc_neumann, bc_2)
      c = scheme.c
-    return c, scheme.scheme_name
+     return c, scheme.scheme_name
     # -------------------------------------------------------------------------------
 
    elif polynomial_option == 4: #Cubic Element
@@ -280,7 +280,6 @@ def Element2D(_simulator_problem, _scheme_option, _polynomial_option, _x, _y, _I
      c = scheme.c
     return c, scheme.scheme_name
     # -------------------------------------------------------------------------------
-
 
 
 
